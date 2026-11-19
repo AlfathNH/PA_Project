@@ -159,14 +159,14 @@
                 
                 <!-- Judul Formulir -->
                 <div class="border-b border-bone-slate pb-4">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-extrabold text-obsidian text-xl flex items-center font-urbanist">
-                            <span class="w-9 h-9 rounded-2xl bg-forest-dark text-lime-harvest flex items-center justify-center mr-2.5 shadow-2xs">
-                                <span class="material-symbols-outlined text-xl">post_add</span>
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="font-extrabold text-obsidian text-lg sm:text-xl flex items-center font-urbanist min-w-0">
+                            <span class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-2xl bg-forest-dark text-lime-harvest flex items-center justify-center mr-2 sm:mr-2.5 shadow-2xs">
+                                <span class="material-symbols-outlined text-lg sm:text-xl">post_add</span>
                             </span>
-                            Formulir Permohonan Alat
+                            <span class="leading-snug truncate">Formulir Permohonan Alat</span>
                         </h2>
-                        <span class="text-[11px] bg-celery-cream text-forest-dark font-black px-3 py-1 rounded-full border border-bone-slate">
+                        <span class="shrink-0 whitespace-nowrap text-[10px] sm:text-[11px] bg-celery-cream text-forest-dark font-black px-2.5 sm:px-3 py-1 rounded-full border border-bone-slate shadow-2xs">
                             Buka 24 Jam
                         </span>
                     </div>
@@ -336,7 +336,7 @@
                     </p>
                 </div>
                 <div>
-                    <span class="text-xs font-black bg-celery-cream text-forest-dark px-3.5 py-1.5 rounded-full border border-bone-slate inline-flex items-center gap-1 shadow-2xs">
+                    <span class="text-xs font-black bg-celery-cream text-forest-dark px-3.5 py-1.5 rounded-full border border-bone-slate inline-flex items-center gap-1 shadow-2xs shrink-0 whitespace-nowrap">
                         <span class="material-symbols-outlined text-xs">folder_open</span>
                         Total: {{ method_exists($pengajuans, 'total') ? $pengajuans->total() : $pengajuans->count() }} Usulan
                     </span>
@@ -401,41 +401,41 @@
                         <div class="p-5 sm:p-6 rounded-3xl border-2 transition bg-white space-y-4 shadow-sm {{ $isApproved ? 'border-lime-harvest bg-lime-50/20' : ($isRejected ? 'border-red-200 bg-red-50/20' : 'border-bone-slate hover:border-forest-dark/40') }}">
                             
                             <!-- Header Kartu Usulan: Nomor Tiket & Tanggal -->
-                            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bone-slate/60 pb-3">
-                                <div class="flex items-center space-x-2">
-                                    <span class="font-mono text-xs font-black text-forest-dark bg-celery-cream px-3 py-1 rounded-xl border border-bone-slate">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-bone-slate/60 pb-3">
+                                <div class="flex flex-wrap items-center gap-2 min-w-0">
+                                    <span class="font-mono text-xs font-black text-forest-dark bg-celery-cream px-2.5 py-1 rounded-xl border border-bone-slate shrink-0 whitespace-nowrap shadow-2xs">
                                         {{ $pengajuan->nomor_pengajuan }}
                                     </span>
-                                    <span class="text-xs text-muted-green font-medium flex items-center gap-1">
+                                    <span class="text-[11px] sm:text-xs text-muted-green font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                         <span class="material-symbols-outlined text-xs">calendar_today</span>
-                                        Diajukan pada: {{ $tglDibuat }}
+                                        <span>Diajukan: {{ $tglDibuat }}</span>
                                     </span>
                                 </div>
 
                                 <!-- Badge Status Bahasa Indonesia Lugas -->
-                                <div>
+                                <div class="shrink-0 self-start sm:self-auto">
                                     @if($isApproved)
-                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-lime-harvest text-obsidian border border-lime-harvest-hover flex items-center gap-1 shadow-2xs">
+                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-lime-harvest text-obsidian border border-lime-harvest-hover flex items-center gap-1 shadow-2xs whitespace-nowrap">
                                             <span class="material-symbols-outlined text-sm font-bold">check_circle</span>
                                             DISETUJUI (ACC DINAS)
                                         </span>
                                     @elseif($isRanked)
-                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-950 border border-amber-harvest flex items-center gap-1 shadow-2xs">
+                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-950 border border-amber-harvest flex items-center gap-1 shadow-2xs whitespace-nowrap">
                                             <span class="material-symbols-outlined text-sm font-bold text-amber-harvest">hourglass_top</span>
                                             MENUNGGU PENETAPAN PIMPINAN
                                         </span>
                                     @elseif($isRejected)
-                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-red-100 text-red-900 border border-red-300 flex items-center gap-1 shadow-2xs">
+                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-red-100 text-red-900 border border-red-300 flex items-center gap-1 shadow-2xs whitespace-nowrap">
                                             <span class="material-symbols-outlined text-sm font-bold">cancel</span>
                                             BELUM LOLOS SELEKSI
                                         </span>
                                     @elseif($pengajuan->status === 'diverifikasi' || $pengajuan->status === 'dinilai')
-                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-900 border border-blue-300 flex items-center gap-1 shadow-2xs">
+                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-900 border border-blue-300 flex items-center gap-1 shadow-2xs whitespace-nowrap">
                                             <span class="material-symbols-outlined text-sm font-bold">verified</span>
                                             BERKAS LOLOS VERIFIKASI
                                         </span>
                                     @else
-                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-900 border border-amber-harvest/60 flex items-center gap-1 shadow-2xs">
+                                        <span class="px-3.5 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-900 border border-amber-harvest/60 flex items-center gap-1 shadow-2xs whitespace-nowrap">
                                             <span class="material-symbols-outlined text-sm font-bold">pending</span>
                                             DALAM ANTREAN PEMERIKSAAN
                                         </span>
@@ -446,15 +446,15 @@
                             <!-- Judul Alat & Alasan Permohonan -->
                             <div>
                                 <div class="flex items-start justify-between gap-3">
-                                    <div>
+                                    <div class="min-w-0 flex-1">
                                         <span class="text-[10px] font-black uppercase tracking-wider text-muted-green block">Mesin yang Diminta:</span>
-                                        <h3 class="font-black text-base sm:text-lg text-obsidian font-urbanist mt-0.5">
+                                        <h3 class="font-black text-base sm:text-lg text-obsidian font-urbanist mt-0.5 leading-snug">
                                             {{ $pengajuan->jenisAlsintan?->nama_alsintan }}
                                         </h3>
                                     </div>
-                                    <div class="text-right">
-                                        <span class="text-[10px] font-black uppercase tracking-wider text-muted-green block">Jumlah Unit:</span>
-                                        <span class="font-mono text-base sm:text-lg font-black text-forest-dark bg-celery-cream/70 px-3 py-0.5 rounded-xl border border-bone-slate inline-block mt-0.5">
+                                    <div class="text-right shrink-0">
+                                        <span class="text-[10px] font-black uppercase tracking-wider text-muted-green block whitespace-nowrap">Jumlah Unit:</span>
+                                        <span class="font-mono text-xs sm:text-base font-black text-forest-dark bg-celery-cream/70 px-2.5 sm:px-3 py-1 rounded-xl border border-bone-slate inline-flex items-center justify-center mt-0.5 shrink-0 whitespace-nowrap shadow-2xs tabular-nums">
                                             {{ $pengajuan->jumlah_diminta }} Unit
                                         </span>
                                     </div>
