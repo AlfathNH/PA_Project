@@ -588,7 +588,7 @@
                                 <label for="nomor_badan_hukum" class="block text-xs font-extrabold text-forest-dark uppercase tracking-wider">
                                     No. SK / Badan Hukum
                                 </label>
-                                <span class="text-[10px] text-muted-green font-bold bg-bone-canvas px-2 py-0.5 rounded-full border border-bone-slate">Opsional</span>
+                                <span class="shrink-0 whitespace-nowrap text-[10px] text-muted-green font-bold bg-bone-canvas px-2 py-0.5 rounded-full border border-bone-slate">Opsional</span>
                             </div>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">

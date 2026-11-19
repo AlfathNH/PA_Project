@@ -389,7 +389,7 @@
     </main>
 
     <!-- Municipal Footer (Dinas Pertanian Kabupaten Subang) -->
-    <footer class="bg-white border-t border-bone-slate mt-auto pt-6 @auth pb-24 lg:pb-6 @else py-6 @endauth">
+    <footer class="bg-white border-t border-bone-slate mt-auto pt-6 @auth pb-32 sm:pb-36 lg:pb-6 @else py-6 @endauth">
         <div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-green">
             <div class="flex items-center space-x-2">
                 <img src="{{ asset('images/logo-subang-emblem.png') }}?v={{ file_exists(public_path('images/logo-subang-emblem.png')) ? filemtime(public_path('images/logo-subang-emblem.png')) : time() }}" 

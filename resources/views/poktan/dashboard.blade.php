@@ -12,7 +12,7 @@
 @endphp
 <div x-data="{ mobileTab: '{{ $initialMobileTab }}', editProfileModal: false }"
      @open-poktan-profile-modal.window="editProfileModal = true"
-     class="space-y-4 sm:space-y-6 pb-24 lg:pb-6 relative">
+     class="space-y-4 sm:space-y-6 pb-36 sm:pb-40 lg:pb-8 relative">
 
     <!-- Ringkasan Identitas Poktan Ringkas (Tampil di Mobile saat tab Status / Ajukan aktif) -->
     <div x-show="mobileTab !== 'profil'"
@@ -278,9 +278,9 @@
 
                 <!-- Langkah 4: Lampiran Berkas Proposal Resmi (PDF) - Terproteksi Anti-Malware -->
                 <div>
-                    <label for="berkas_proposal" class="block text-xs sm:text-sm font-black text-forest-dark uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                        <span>Langkah 4: Lampiran Proposal / Surat Pengantar (PDF)</span>
-                        <span class="text-[10px] font-bold text-muted-green normal-case bg-bone-canvas px-2.5 py-0.5 rounded-full border border-bone-slate">Opsional (Format .PDF)</span>
+                    <label for="berkas_proposal" class="flex flex-wrap items-center justify-between gap-1.5 text-xs sm:text-sm font-black text-forest-dark uppercase tracking-wider mb-1.5">
+                        <span class="leading-tight">Langkah 4: Lampiran Proposal (PDF)</span>
+                        <span class="shrink-0 whitespace-nowrap text-[10px] font-bold text-muted-green normal-case bg-bone-canvas px-2.5 py-1 rounded-full border border-bone-slate">Opsional (Format .PDF)</span>
                     </label>
                     <input type="file" id="berkas_proposal" name="berkas_proposal" accept="application/pdf"
                            class="w-full px-3.5 py-2.5 bg-bone-canvas/70 border-2 border-bone-slate rounded-2xl text-xs font-bold text-obsidian file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-forest-dark file:text-lime-harvest hover:file:bg-forest-accent cursor-pointer transition focus:ring-2 focus:ring-forest-dark focus:bg-white @error('berkas_proposal') border-red-500 @enderror">
@@ -303,16 +303,18 @@
                 </div>
 
                 <!-- Tombol Submit Ramah Sentuhan (Besar & Kontras Sangat Tinggi) -->
-                <button type="submit" 
-                        class="w-full py-4 px-6 rounded-full bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian font-black text-sm sm:text-base transition shadow-md flex items-center justify-between group active:scale-[0.99] border-2 border-black/10">
-                    <span class="tracking-tight flex items-center gap-2">
-                        <span class="material-symbols-outlined text-xl">send</span>
-                        <span>Kirimkan Permohonan Bantuan ke Dinas</span>
-                    </span>
-                    <span class="w-9 h-9 rounded-full bg-forest-dark text-lime-harvest flex items-center justify-center text-sm group-hover:translate-x-1 transition-transform">
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-                    </span>
-                </button>
+                <div class="pt-2 pb-6 sm:pb-0">
+                    <button type="submit" 
+                            class="w-full py-4 px-5 sm:px-6 rounded-full bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian font-black text-sm sm:text-base transition shadow-md flex items-center justify-between group active:scale-[0.99] border-2 border-black/10">
+                        <span class="tracking-tight flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">send</span>
+                            <span>Kirimkan Permohonan Bantuan ke Dinas</span>
+                        </span>
+                        <span class="w-9 h-9 rounded-full bg-forest-dark text-lime-harvest flex items-center justify-center text-sm group-hover:translate-x-1 transition-transform shrink-0">
+                            <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </span>
+                    </button>
+                </div>
             </form>
         </div>
 

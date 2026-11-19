@@ -108,19 +108,19 @@
 
     <!-- Government Protocol Top Banner -->
     <section class="relative z-40 bg-forest-dark text-white text-xs border-b border-forest-dark/30">
-        <div class="max-w-[1536px] mx-auto px-4 sm:px-8 py-2 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-chartreuse/15 text-chartreuse font-semibold text-[10px] tracking-wider uppercase border border-chartreuse/25">
+        <div class="max-w-[1536px] mx-auto px-3 sm:px-8 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-chartreuse/15 text-chartreuse font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-chartreuse/25">
                     KARYA UTAMA SATYA NAGARA
                 </span>
                 <span class="hidden md:inline text-white/80 font-medium tracking-wide">
                     PEMERINTAH DAERAH KABUPATEN SUBANG • DINAS PERTANIAN
                 </span>
             </div>
-            <div class="flex items-center gap-4 text-white/90 text-[11px]">
-                <span class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm text-chartreuse">schedule</span>
-                    <span id="live-clock">--:--:-- WIB • Subang, Jawa Barat</span>
+            <div class="flex items-center gap-3 sm:gap-4 text-white/90 text-[10px] sm:text-[11px]">
+                <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs sm:text-sm text-chartreuse">schedule</span>
+                    <span id="live-clock">--:--:-- WIB • Subang</span>
                 </span>
                 <div class="h-3 w-px bg-white/20 hidden md:block"></div>
                 <span class="hidden md:flex items-center gap-1 text-chartreuse">
@@ -132,14 +132,26 @@
     </section>
 
     <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-forest-dark/10 shadow-sm transition-all duration-200">
-        <div class="flex justify-between items-center w-full px-4 sm:px-8 max-w-[1536px] mx-auto h-20">
-            <!-- Brand & Transparent Emblem -->
-            <a href="{{ url('/') }}" class="flex items-center gap-3 group">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-forest-dark/10 shadow-sm transition-all duration-200">
+        <div class="flex justify-between items-center w-full px-3.5 sm:px-8 max-w-[1536px] mx-auto min-h-[4.25rem] sm:h-20 py-2 sm:py-0 gap-2 sm:gap-4">
+            <!-- Brand & Transparent Emblem (Responsive Layout Anti-Tumpuk di Mobile) -->
+            <a href="{{ url('/') }}" class="flex items-center gap-2.5 sm:gap-3.5 group min-w-0">
                 <img src="{{ asset('images/logo-subang-emblem.png') }}?v={{ file_exists(public_path('images/logo-subang-emblem.png')) ? filemtime(public_path('images/logo-subang-emblem.png')) : time() }}" 
                      alt="Logo Pemkab Subang" 
-                     class="h-12 w-auto object-contain transition-transform group-hover:scale-105 filter drop-shadow-sm">
-                <div class="flex flex-col">
+                     class="h-9 sm:h-12 w-auto shrink-0 object-contain transition-transform group-hover:scale-105 filter drop-shadow-sm">
+                
+                <!-- Teks Ringkas Mobile (< sm) -->
+                <div class="flex flex-col sm:hidden min-w-0">
+                    <span class="font-extrabold text-xs text-forest-dark tracking-tight leading-snug group-hover:text-emerald-700 transition-colors">
+                        Dinas Pertanian Subang
+                    </span>
+                    <span class="text-[9px] font-bold text-muted-green uppercase tracking-wide truncate">
+                        SPK Alsintan TOPSIS
+                    </span>
+                </div>
+
+                <!-- Teks Lengkap Tablet & Desktop (>= sm) -->
+                <div class="hidden sm:flex flex-col min-w-0">
                     <span class="font-bold text-base sm:text-lg text-forest-dark tracking-tight leading-tight group-hover:text-emerald-700 transition-colors">
                         Dinas Pertanian Kabupaten Subang
                     </span>
@@ -162,33 +174,36 @@
                 </a>
             </nav>
 
-            <!-- Right Portal CTAs -->
-            <div class="flex items-center gap-3">
+            <!-- Right Portal CTAs (Mobile-Friendly Pill Button) -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                 @auth
                     @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-forest-dark text-white font-bold text-xs hover:bg-forest-hover transition-all shadow-sm">
+                        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-forest-dark text-white font-bold text-xs hover:bg-forest-hover transition-all shadow-sm">
                             <span class="material-symbols-outlined text-base text-chartreuse">dashboard</span>
-                            <span>Dashboard Admin</span>
+                            <span class="hidden sm:inline">Dashboard Admin</span>
+                            <span class="sm:hidden">Dashboard</span>
                         </a>
                     @elseif(auth()->user()->role === 'kepala_bidang')
-                        <a href="{{ route('kepbid.dashboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-forest-dark text-white font-bold text-xs hover:bg-forest-hover transition-all shadow-sm">
+                        <a href="{{ route('kepbid.dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-forest-dark text-white font-bold text-xs hover:bg-forest-hover transition-all shadow-sm">
                             <span class="material-symbols-outlined text-base text-chartreuse">dashboard</span>
-                            <span>Dashboard Pimpinan</span>
+                            <span class="hidden sm:inline">Dashboard Pimpinan</span>
+                            <span class="sm:hidden">Dashboard</span>
                         </a>
                     @else
-                        <a href="{{ route('poktan.dashboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-forest-dark text-white font-bold text-xs hover:bg-forest-hover transition-all shadow-sm">
+                        <a href="{{ route('poktan.dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-forest-dark text-white font-bold text-xs hover:bg-forest-hover transition-all shadow-sm">
                             <span class="material-symbols-outlined text-base text-chartreuse">dashboard</span>
-                            <span>Dashboard Poktan</span>
+                            <span class="hidden sm:inline">Dashboard Poktan</span>
+                            <span class="sm:hidden">Dashboard</span>
                         </a>
                     @endif
                 @else
                     <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-forest-dark/30 text-forest-dark hover:bg-forest-dark/5 text-xs font-bold transition">
                         Daftar Poktan
                     </a>
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-chartreuse text-obsidian font-bold text-xs hover:bg-chartreuse-hover active:scale-[0.98] transition-all shadow-sm border border-black/10">
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-chartreuse text-obsidian font-black text-xs hover:bg-chartreuse-hover active:scale-[0.98] transition-all shadow-sm border border-black/10 shrink-0 whitespace-nowrap">
                         <span>Masuk Portal</span>
-                        <span class="w-6 h-6 rounded-full bg-forest-dark text-chartreuse flex items-center justify-center text-xs">
-                            <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-forest-dark text-chartreuse flex items-center justify-center text-xs shrink-0">
+                            <span class="material-symbols-outlined text-xs sm:text-sm leading-none">arrow_forward</span>
                         </span>
                     </a>
                 @endauth
