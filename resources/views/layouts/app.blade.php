@@ -461,35 +461,6 @@
         @endif
     @endauth
 
-    @if(app()->environment(['local', 'testing']) || config('app.debug'))
-    <!-- Floating Discreet Role Switcher (Ditempatkan di atas Bottom Bar pada layar mobile agar tidak bertumpuk) -->
-    <div x-data="{ openSwitcher: false }" @click.outside="openSwitcher = false" class="fixed @auth bottom-24 lg:bottom-4 @else bottom-4 @endauth right-4 z-40">
-        <div class="relative flex flex-col items-end">
-            <div x-show="openSwitcher" x-cloak x-transition
-                 class="flex flex-col gap-1.5 p-2 bg-obsidian/95 backdrop-blur-md rounded-2xl border border-bone-slate shadow-2xl mb-2 text-xs text-white min-w-[170px]">
-                <span class="text-[10px] uppercase font-bold tracking-wider text-celery-cream px-2 py-0.5">Simulasi Akses Peran:</span>
-                <a href="{{ route('demo.login', 'admin') }}" class="px-3 py-2 min-h-[44px] rounded-xl bg-blue-600/80 hover:bg-blue-600 flex items-center gap-1.5 font-bold transition">
-                    <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-                    Admin Dinas
-                </a>
-                <a href="{{ route('demo.login', 'kepbid') }}" class="px-3 py-2 min-h-[44px] rounded-xl bg-amber-600/85 hover:bg-amber-600 flex items-center gap-1.5 font-bold transition">
-                    <span class="material-symbols-outlined text-sm">workspace_premium</span>
-                    Kepala Bidang
-                </a>
-                <a href="{{ route('demo.login', 'poktan') }}" class="px-3 py-2 min-h-[44px] rounded-xl bg-emerald-600/80 hover:bg-emerald-600 flex items-center gap-1.5 font-bold transition">
-                    <span class="material-symbols-outlined text-sm">groups</span>
-                    Poktan Berkah
-                </a>
-            </div>
-            <button type="button" @click="openSwitcher = !openSwitcher" aria-label="Buka menu ganti peran demo"
-                    class="px-4 py-2.5 min-h-[44px] rounded-full bg-forest-dark/95 hover:bg-forest-dark text-lime-harvest border border-white/20 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-bold transition">
-                <span class="material-symbols-outlined text-sm">swap_horiz</span>
-                <span>Ganti Peran</span>
-            </button>
-        </div>
-    </div>
-    @endif
-
     <!-- Global Lightweight SVG/CSS Loading Overlay (Instant Render & Smooth Fade-Out) -->
     <div id="global-3d-loader" 
          class="fixed inset-0 z-[9999] bg-forest-dark/60 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none"
