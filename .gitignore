@@ -1,0 +1,62 @@
+# ==============================================================================
+# DEPENDENCIES (PHP & JAVASCRIPT)
+# ==============================================================================
+/vendor
+/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==============================================================================
+# ENVIRONMENT & SECURITY CREDENTIALS
+# ==============================================================================
+.env
+.env.backup
+.env.production
+.env.*.local
+auth.json
+/auth.json
+/storage/*.key
+
+# ==============================================================================
+# AI AGENTS, LOCAL TOOLS & LOGS
+# ==============================================================================
+*.log
+.agent/
+AGENTS.md
+CLAUDE.md
+graphify-out/
+SECURITY_AUDIT.md
+
+# ==============================================================================
+# IDE, EDITORS & SYSTEM FILES
+# ==============================================================================
+.DS_Store
+Thumbs.db
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+.phpactor.json
+/.codex
+/.cursor/
+.cursor/
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# ==============================================================================
+# COMPILED ASSETS, BUILDS & LOCAL STORAGE SYMLINKS
+# ==============================================================================
+/public/hot
+/public/storage
+/public/build
+/public/fonts-manifest.dev.json
+/storage/pail
+
+# ==============================================================================
+# TESTING CACHE
+# ==============================================================================
+/.phpunit.cache
+.phpunit.cache
+.phpunit.result.cache
