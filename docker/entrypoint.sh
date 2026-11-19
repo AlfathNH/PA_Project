@@ -7,6 +7,12 @@ echo "[Deploy] Binding Apache to port $PORT..."
 sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/g" /etc/apache2/sites-available/000-default.conf
 
+# Fallback APP_KEY if not specified
+if [ -z "$APP_KEY" ]; then
+    echo "[Deploy] Setting default APP_KEY..."
+    export APP_KEY="base64:ueJta0o1+95dE+NEeDx/9rIl9jGCnlrx7EIkaK/LeLQ="
+fi
+
 # Setup SQLite if using sqlite or default
 if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
     echo "[Deploy] Initializing SQLite database..."

@@ -52,6 +52,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENV APP_ENV=production
 ENV APP_DEBUG=true
 ENV LOG_CHANNEL=stderr
+ENV APP_KEY="base64:ueJta0o1+95dE+NEeDx/9rIl9jGCnlrx7EIkaK/LeLQ="
+ENV DB_CONNECTION=sqlite
 
 EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
