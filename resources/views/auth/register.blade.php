@@ -528,15 +528,10 @@
                     </div>
 
                     <!-- Tombol Navigasi Bawah Langkah 1 -->
-                    <div class="pt-4 border-t border-bone-slate flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <a href="{{ route('login') }}" class="text-xs font-bold text-forest-dark hover:underline flex items-center order-2 sm:order-1">
-                            <span class="material-symbols-outlined text-sm mr-1">arrow_back</span>
-                            Sudah punya akun? Masuk
-                        </a>
-
+                    <div class="pt-4 border-t border-bone-slate flex items-center justify-end">
                         <button type="button" 
                                 @click="nextStep()"
-                                class="w-full sm:w-auto px-7 py-3 rounded-full bg-forest-dark hover:bg-forest-deep text-white font-black text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2 active:scale-95 order-1 sm:order-2">
+                                class="w-full sm:w-auto px-7 py-3 rounded-full bg-forest-dark hover:bg-forest-deep text-white font-black text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2 active:scale-95">
                             <span>Lanjut ke Data Kelembagaan</span>
                             <span class="w-6 h-6 rounded-full bg-lime-harvest text-obsidian flex items-center justify-center text-xs font-bold">
                                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
