@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SecurityHeadersMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Memproses request yang masuk dan menambahkan header keamanan HTTP ke response.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

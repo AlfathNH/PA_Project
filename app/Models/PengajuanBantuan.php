@@ -226,7 +226,7 @@ class PengajuanBantuan extends Model
                     'waktu_perubahan'      => now(),
                 ]);
             } catch (\Throwable $e) {
-                // Silently bypass to ensure backward-compatibility
+                // Abaikan error agar kompatibilitas mundur tetap terjaga
             }
         });
 
@@ -252,7 +252,7 @@ class PengajuanBantuan extends Model
                         'waktu_perubahan'      => now(),
                     ]);
                 } catch (\Throwable $e) {
-                    // Silently bypass
+                    // Abaikan error secara diam-diam
                 }
             }
         });

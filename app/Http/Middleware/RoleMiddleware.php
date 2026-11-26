@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RoleMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Memproses request yang masuk dan memvalidasi hak akses berdasarkan role.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      * @param  string  ...$roles Daftar role yang diizinkan (dipisah koma)
