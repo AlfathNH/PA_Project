@@ -23,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Paksa HTTPS di lingkungan produksi / Vercel cloud
+        if (config('app.env') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Daftarkan Policy Otorisasi & Anti-IDOR Pengajuan Bantuan
         Gate::policy(PengajuanBantuan::class, PengajuanBantuanPolicy::class);
 
