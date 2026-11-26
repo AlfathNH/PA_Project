@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.4-apache
 
 # Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libpq-dev \
     libsqlite3-dev \
     sqlite3 \
     zip \
@@ -13,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     && docker-php-ext-install \
+    pdo_pgsql \
+    pgsql \
     pdo_mysql \
     pdo_sqlite \
     mbstring \
