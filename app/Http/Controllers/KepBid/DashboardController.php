@@ -130,7 +130,11 @@ class DashboardController extends Controller
                 ? "Usulan {$pengajuanLocked->nomor_pengajuan} ({$namaPoktan}) berhasil disetujui. Berkas masuk arsip riwayat dengan masa retensi 13 bulan audit."
                 : "Usulan {$pengajuanLocked->nomor_pengajuan} ({$namaPoktan}) ditolak. Berkas masuk antrean pembersihan otomatis (masa retensi 90 hari).";
 
-            return back()->with('success', $pesan);
+            // Otomatis arahkan pimpinan langsung ke tab 'riwayat' agar hasil ACC langsung terlihat tanpa refresh
+            return redirect()->route('kepbid.dashboard', [
+                'jenis_id' => $pengajuanLocked->jenis_alsintan_id,
+                'tab'      => 'riwayat',
+            ])->with('success', $pesan);
         });
     }
 

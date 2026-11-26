@@ -99,23 +99,30 @@ class DashboardController extends Controller
 
                 // Pemrosesan Unggah Berkas Proposal Terverifikasi & Aman (Anti-Malware & Anti-Path-Traversal)
                 if ($request->hasFile('berkas_proposal')) {
-                    $file = $request->file('berkas_proposal');
-                    if ($file->isValid()) {
-                        // Gunakan UUID acak sebagai nama file fisik di server (mencegah double extension & overwrite)
-                        $safeFileName = Str::uuid()->toString() . '.pdf';
-                        $folderPath   = "pengajuan/{$pengajuan->id}";
+                    try {
+                        $file = $request->file('berkas_proposal');
+                        if ($file->isValid()) {
+                            // Gunakan UUID acak sebagai nama file fisik di server (mencegah double extension & overwrite)
+                            $safeFileName = Str::uuid()->toString() . '.pdf';
+                            $folderPath   = "pengajuan/{$pengajuan->id}";
 
-                        // Simpan di disk private (storage/app/private/pengajuan/{id}/)
-                        $storedPath = Storage::disk('private')->putFileAs($folderPath, $file, $safeFileName);
+                            // Simpan di disk private
+                            $storedPath = Storage::disk('private')->putFileAs($folderPath, $file, $safeFileName);
 
-                        BerkasPengajuan::create([
-                            'pengajuan_bantuan_id' => $pengajuan->id,
-                            'nama_berkas'          => 'Surat Proposal Usulan ' . $pengajuan->nomor_pengajuan,
-                            'jenis_berkas'         => 'surat_permohonan',
-                            'file_path'            => $storedPath,
-                            'file_name_original'   => $file->getClientOriginalName(),
-                            'file_mime_type'       => 'application/pdf',
-                            'file_size'            => $file->getSize(),
+                            BerkasPengajuan::create([
+                                'pengajuan_bantuan_id' => $pengajuan->id,
+                                'nama_berkas'          => 'Surat Proposal Usulan ' . $pengajuan->nomor_pengajuan,
+                                'jenis_berkas'         => 'surat_permohonan',
+                                'file_path'            => $storedPath,
+                                'file_name_original'   => $file->getClientOriginalName(),
+                                'file_mime_type'       => 'application/pdf',
+                                'file_size'            => $file->getSize(),
+                            ]);
+                        }
+                    } catch (\Throwable $fileEx) {
+                        Log::warning('Unggah berkas fisik proposal dilewati atau gagal di serverless', [
+                            'pengajuan_id' => $pengajuan->id,
+                            'error'        => $fileEx->getMessage(),
                         ]);
                     }
                 }

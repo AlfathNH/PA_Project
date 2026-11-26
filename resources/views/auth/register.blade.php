@@ -259,8 +259,8 @@
                         const pc = document.getElementById('password_confirmation');
                         if (!this.name || !this.name.trim()) { n.focus(); n.reportValidity(); }
                         else if (!this.email || !this.email.trim() || !this.email.includes('@')) { e.focus(); e.reportValidity(); }
-                        else if (!this.password || this.password.length < 8) { p.focus(); alert('Kata sandi minimal 8 karakter dengan kombinasi huruf dan angka.'); }
-                        else if (this.password !== this.password_confirmation) { pc.focus(); alert('Konfirmasi kata sandi tidak cocok. Mohon samakan.'); }
+                        else if (!this.password || this.password.length < 8) { this.toastMessage = 'Kata sandi minimal 8 karakter dengan kombinasi huruf dan angka.'; p.focus(); }
+                        else if (this.password !== this.password_confirmation) { this.toastMessage = 'Konfirmasi kata sandi tidak cocok. Mohon samakan.'; pc.focus(); }
                     } else if (st === 2) {
                         const pk = document.getElementById('nama_poktan');
                         const k = document.getElementById('nama_ketua');
@@ -913,8 +913,8 @@
                         if (!name.value.trim()) { name.focus(); name.reportValidity(); }
                         else if (!email.value.trim() || !email.checkValidity()) { email.focus(); email.reportValidity(); }
                         else if (!pw.value) { pw.focus(); pw.reportValidity(); }
-                        else if (pw.value.length < 8) { alert('Kata sandi minimal 8 karakter dengan kombinasi huruf dan angka.'); pw.focus(); }
-                        else if (pw.value !== pwConf.value) { alert('Konfirmasi kata sandi tidak cocok. Mohon samakan.'); pwConf.focus(); }
+                        else if (pw.value.length < 8) { pw.focus(); pw.reportValidity(); }
+                        else if (pw.value !== pwConf.value) { pwConf.setCustomValidity('Konfirmasi kata sandi tidak cocok. Mohon samakan.'); pwConf.focus(); pwConf.reportValidity(); }
                     }, 100);
                     return false;
                 }

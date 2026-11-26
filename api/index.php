@@ -5,12 +5,13 @@ $_SERVER['HTTPS'] = 'on';
 $_SERVER['SERVER_PORT'] = 443;
 $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
 
-// Buat struktur direktori sementara di /tmp agar Laravel bisa menulis cache & view di Vercel
+// Buat struktur direktori sementara di /tmp agar Laravel bisa menulis cache, session & upload di Vercel
 $dirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache/data',
     '/tmp/storage/framework/sessions',
     '/tmp/storage/logs',
+    '/tmp/storage/app/private',
 ];
 
 foreach ($dirs as $dir) {
