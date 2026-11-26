@@ -1,5 +1,10 @@
 <?php
 
+// Paksa HTTPS flag pada lingkungan serverless Vercel agar tidak ada mixed-content HTTP
+$_SERVER['HTTPS'] = 'on';
+$_SERVER['SERVER_PORT'] = 443;
+$_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+
 // Buat struktur direktori sementara di /tmp agar Laravel bisa menulis cache & view di Vercel
 $dirs = [
     '/tmp/storage/framework/views',

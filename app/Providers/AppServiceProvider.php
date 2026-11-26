@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Paksa HTTPS di lingkungan produksi / Vercel cloud
-        if (config('app.env') === 'production' || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        // Paksa HTTPS di lingkungan produksi / Vercel cloud agar semua link & form action terjamin HTTPS
+        if (config('app.env') !== 'local' || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
