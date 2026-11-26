@@ -115,7 +115,7 @@
             <div class="mb-4 p-4 rounded-2xl bg-red-50/95 backdrop-blur-md border border-red-200 text-red-900 flex items-start gap-2.5 shadow-sm text-xs font-semibold">
                 <span class="material-symbols-outlined text-red-600 text-lg shrink-0">{{ $lockoutSec > 0 ? 'timer' : 'gpp_maybe' }}</span>
                 <div class="space-y-1 flex-1">
-                    <p>{{ $authErrorMsg ?: 'Akses masuk dibatasi sementara karena 5 kali percobaan gagal.' }}</p>
+                    <p>{{ $authErrorMsg ?: 'Akses masuk dibatasi sementara selama 5 menit karena 3 kali percobaan gagal.' }}</p>
                     @if($lockoutSec > 0)
                         <p class="text-[11px] font-extrabold text-red-800 tabular-nums">
                             Sisa waktu tunggu: <span id="lockout-countdown" class="font-mono bg-white px-2 py-0.5 rounded-md border border-red-200">--:--</span>

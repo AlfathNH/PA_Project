@@ -21,8 +21,8 @@ use Illuminate\Validation\Rules\Password;
  */
 class AuthController extends Controller
 {
-    private const MAX_AUTH_ATTEMPTS = 5;
-    private const LOCKOUT_SECONDS   = 300; // 5 menit pembekuan setelah 5x gagal
+    private const MAX_AUTH_ATTEMPTS = 3;
+    private const LOCKOUT_SECONDS   = 300; // 5 menit pembekuan setelah 3x gagal
 
     /**
      * Menghitung key limiter akun+IP dan IP agar serangan spam email acak maupun target tunggal sama-sama terblokir.
@@ -127,7 +127,7 @@ class AuthController extends Controller
                     ->withInput($request->only('email'))
                     ->with('lockout_seconds', $nowLocked)
                     ->withErrors([
-                        'auth_error' => 'Percobaan masuk gagal sebanyak 5 kali. Silakan tunggu ' . $this->formatWaitDuration($nowLocked) . ' sebelum mencoba kembali.',
+                        'auth_error' => 'Percobaan masuk gagal sebanyak 3 kali. Silakan tunggu ' . $this->formatWaitDuration($nowLocked) . ' sebelum mencoba kembali.',
                     ]);
             }
 
@@ -164,7 +164,7 @@ class AuthController extends Controller
                 ->withInput($request->only('email'))
                 ->with('lockout_seconds', $nowLocked)
                 ->withErrors([
-                    'auth_error' => 'Percobaan masuk gagal sebanyak 5 kali. Silakan tunggu ' . $this->formatWaitDuration($nowLocked) . ' sebelum mencoba kembali.',
+                    'auth_error' => 'Percobaan masuk gagal sebanyak 3 kali. Silakan tunggu ' . $this->formatWaitDuration($nowLocked) . ' sebelum mencoba kembali.',
                 ]);
         }
 
@@ -247,7 +247,7 @@ class AuthController extends Controller
                     ->withInput($request->only('email'))
                     ->with('lockout_seconds', $nowLocked)
                     ->withErrors([
-                        'auth_error' => 'Verifikasi akun gagal sebanyak 5 kali. Silakan tunggu ' . $this->formatWaitDuration($nowLocked) . ' sebelum mencoba kembali.',
+                        'auth_error' => 'Verifikasi akun gagal sebanyak 3 kali. Silakan tunggu ' . $this->formatWaitDuration($nowLocked) . ' sebelum mencoba kembali.',
                     ]);
             }
 

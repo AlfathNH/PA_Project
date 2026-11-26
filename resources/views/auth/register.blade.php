@@ -257,17 +257,17 @@
                         const e = document.getElementById('email');
                         const p = document.getElementById('password');
                         const pc = document.getElementById('password_confirmation');
-                        if (!this.name || !this.name.trim()) { n.focus(); n.reportValidity(); }
-                        else if (!this.email || !this.email.trim() || !this.email.includes('@')) { e.focus(); e.reportValidity(); }
+                        if (!this.name || !this.name.trim()) { n.focus(); }
+                        else if (!this.email || !this.email.trim() || !this.email.includes('@')) { e.focus(); }
                         else if (!this.password || this.password.length < 8) { this.toastMessage = 'Kata sandi minimal 8 karakter dengan kombinasi huruf dan angka.'; p.focus(); }
                         else if (this.password !== this.password_confirmation) { this.toastMessage = 'Konfirmasi kata sandi tidak cocok. Mohon samakan.'; pc.focus(); }
                     } else if (st === 2) {
                         const pk = document.getElementById('nama_poktan');
                         const k = document.getElementById('nama_ketua');
                         const hp = document.getElementById('no_hp_ketua');
-                        if (!this.nama_poktan || !this.nama_poktan.trim()) { pk.focus(); pk.reportValidity(); }
-                        else if (!this.nama_ketua || !this.nama_ketua.trim()) { k.focus(); k.reportValidity(); }
-                        else if (!this.no_hp_ketua || !this.no_hp_ketua.trim()) { hp.focus(); hp.reportValidity(); }
+                        if (!this.nama_poktan || !this.nama_poktan.trim()) { pk.focus(); }
+                        else if (!this.nama_ketua || !this.nama_ketua.trim()) { k.focus(); }
+                        else if (!this.no_hp_ketua || !this.no_hp_ketua.trim()) { hp.focus(); }
                     }
                 }, 150);
             }
@@ -433,7 +433,7 @@
             </div>
 
             <!-- Formulir Registrasi Mandiri (Multi-Step Form) -->
-            <form action="{{ route('register.post') }}" method="POST" id="register-form" class="space-y-6">
+            <form action="{{ route('register.post') }}" method="POST" id="register-form" novalidate class="space-y-6">
                 @csrf
 
                 <!-- ============================================================= -->
@@ -910,11 +910,11 @@
                     e.preventDefault();
                     window.dispatchEvent(new CustomEvent('change-step', { detail: 1 }));
                     setTimeout(() => {
-                        if (!name.value.trim()) { name.focus(); name.reportValidity(); }
-                        else if (!email.value.trim() || !email.checkValidity()) { email.focus(); email.reportValidity(); }
-                        else if (!pw.value) { pw.focus(); pw.reportValidity(); }
-                        else if (pw.value.length < 8) { pw.focus(); pw.reportValidity(); }
-                        else if (pw.value !== pwConf.value) { pwConf.setCustomValidity('Konfirmasi kata sandi tidak cocok. Mohon samakan.'); pwConf.focus(); pwConf.reportValidity(); }
+                        if (!name.value.trim()) { name.focus(); }
+                        else if (!email.value.trim() || !email.checkValidity()) { email.focus(); }
+                        else if (!pw.value) { pw.focus(); }
+                        else if (pw.value.length < 8) { pw.focus(); }
+                        else if (pw.value !== pwConf.value) { pwConf.focus(); }
                     }, 100);
                     return false;
                 }
@@ -928,9 +928,9 @@
                     e.preventDefault();
                     window.dispatchEvent(new CustomEvent('change-step', { detail: 2 }));
                     setTimeout(() => {
-                        if (!poktan.value.trim()) { poktan.focus(); poktan.reportValidity(); }
-                        else if (!ketua.value.trim()) { ketua.focus(); ketua.reportValidity(); }
-                        else if (!hp.value.trim()) { hp.focus(); hp.reportValidity(); }
+                        if (!poktan.value.trim()) { poktan.focus(); }
+                        else if (!ketua.value.trim()) { ketua.focus(); }
+                        else if (!hp.value.trim()) { hp.focus(); }
                     }, 100);
                     return false;
                 }
