@@ -4,11 +4,12 @@
 
 @section('content')
 @php
-    $initialMobileTab = $errors->hasAny(['nama_poktan', 'nomor_badan_hukum', 'nama_ketua', 'no_hp_ketua', 'luas_lahan_total', 'jumlah_anggota', 'desa', 'kecamatan', 'alamat_lengkap'])
-        ? 'profil'
-        : ($errors->hasAny(['jenis_alsintan_id', 'tahun_pengajuan', 'jumlah_diminta', 'jumlah_alsintan_eksisting', 'alasan_pengajuan', 'berkas_proposal'])
-            ? 'form'
-            : 'status');
+    $initialMobileTab = request('tab')
+        ?: ($errors->hasAny(['nama_poktan', 'nomor_badan_hukum', 'nama_ketua', 'no_hp_ketua', 'luas_lahan_total', 'jumlah_anggota', 'desa', 'kecamatan', 'alamat_lengkap'])
+            ? 'profil'
+            : ($errors->hasAny(['jenis_alsintan_id', 'tahun_pengajuan', 'jumlah_diminta', 'jumlah_alsintan_eksisting', 'alasan_pengajuan', 'berkas_proposal'])
+                ? 'form'
+                : 'status'));
 @endphp
 <div x-data="{ mobileTab: '{{ $initialMobileTab }}', editProfileModal: false }"
      @open-poktan-profile-modal.window="editProfileModal = true"
@@ -200,15 +201,65 @@
                 </div>
             </div>
 
-            <form action="{{ route('poktan.pengajuan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+            <!-- Formulir Pengajuan Bantuan Alsintan (Bebas Tooltip Native, Validasi Notif Card) -->
+            <form action="{{ route('poktan.pengajuan.store') }}" 
+                  method="POST" 
+                  enctype="multipart/form-data" 
+                  novalidate
+                  x-data="{
+                      formError: '',
+                      alsintanId: '{{ old('jenis_alsintan_id', '') }}',
+                      alasan: '{{ addslashes(old('alasan_pengajuan', '')) }}',
+                      validatePengajuan(e) {
+                          this.formError = '';
+                          if (!this.alsintanId) {
+                              e.preventDefault();
+                              this.formError = 'Harap pilih jenis mesin pertanian terlebih dahulu pada Langkah 1.';
+                              const el = document.getElementById('jenis_alsintan_id');
+                              if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus(); }
+                              return false;
+                          }
+                          if (!this.alasan || !this.alasan.trim()) {
+                              e.preventDefault();
+                              this.formError = 'Harap isi alasan dan cerita kebutuhan alat di sawah pada Langkah 3.';
+                              const el = document.getElementById('alasan_pengajuan');
+                              if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus(); }
+                              return false;
+                          }
+                      }
+                  }"
+                  @submit="validatePengajuan($event)"
+                  class="space-y-5">
                 @csrf
+
+                <!-- Notifikasi Peringatan Validasi Interaktif (Animasi Halus & Kontras Tinggi) -->
+                <div x-cloak 
+                     x-show="formError" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 -translate-y-2 scale-98"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-2 scale-98"
+                     class="p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 flex items-start gap-3 shadow-sm">
+                    <div class="w-8 h-8 rounded-xl bg-amber-200 text-amber-900 flex items-center justify-center shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined text-lg">warning</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs sm:text-sm font-black text-amber-950" x-text="formError"></p>
+                        <p class="text-[11px] text-amber-800/90 mt-0.5 font-medium">Lengkapi kolom bertanda bintang sebelum mengirim usulan ke dinas.</p>
+                    </div>
+                    <button type="button" @click="formError = ''" class="text-amber-800 hover:text-amber-950 text-xs font-bold p-1 rounded-lg hover:bg-amber-100 transition shrink-0" aria-label="Tutup notifikasi">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
 
                 <!-- Langkah 1: Kategori Alat / Alsintan -->
                 <div>
                     <label for="jenis_alsintan_id" class="block text-xs sm:text-sm font-black text-forest-dark uppercase tracking-wider mb-1.5">
                         Langkah 1: Pilih Jenis Mesin Pertanian <span class="text-red-500">*</span>
                     </label>
-                    <select name="jenis_alsintan_id" id="jenis_alsintan_id" required
+                    <select name="jenis_alsintan_id" id="jenis_alsintan_id" x-model="alsintanId"
                             class="w-full px-4 py-3.5 bg-bone-canvas/70 border-2 border-bone-slate rounded-2xl text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:border-forest-dark focus:bg-white transition @error('jenis_alsintan_id') border-red-500 @enderror">
                         <option value="">-- Sentuh / Klik untuk Memilih Mesin Pertanian --</option>
                         @foreach($jenisAlsintans as $alsintan)
@@ -233,7 +284,7 @@
                             <label for="tahun_pengajuan" class="block text-[11px] font-bold text-obsidian mb-1">
                                 Tahun Usulan
                             </label>
-                            <input type="number" id="tahun_pengajuan" name="tahun_pengajuan" value="{{ old('tahun_pengajuan', date('Y')) }}" min="2024" max="2030" required
+                            <input type="number" id="tahun_pengajuan" name="tahun_pengajuan" value="{{ old('tahun_pengajuan', date('Y')) }}" min="2024" max="2030"
                                    class="no-spin tabular-nums w-full px-3.5 py-3 bg-bone-canvas/70 border-2 border-bone-slate rounded-xl text-sm font-black text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('tahun_pengajuan') border-red-500 @enderror">
                             @error('tahun_pengajuan') <p class="text-xs text-red-600 mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>
@@ -243,7 +294,7 @@
                             <label for="jumlah_diminta" class="block text-[11px] font-bold text-obsidian mb-1">
                                 Jumlah Diminta <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" id="jumlah_diminta" name="jumlah_diminta" value="{{ old('jumlah_diminta', 1) }}" min="1" max="10" step="1" required
+                            <input type="number" id="jumlah_diminta" name="jumlah_diminta" value="{{ old('jumlah_diminta', 1) }}" min="1" max="10" step="1"
                                    class="no-spin tabular-nums w-full px-3.5 py-3 bg-bone-canvas/70 border-2 border-bone-slate rounded-xl text-sm font-black text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('jumlah_diminta') border-red-500 @enderror">
                             <span class="text-[10px] text-muted-green block mt-0.5 font-semibold">Satuan: Unit</span>
                             @error('jumlah_diminta') <p class="text-xs text-red-600 mt-1 font-semibold">{{ $message }}</p> @enderror
@@ -254,7 +305,7 @@
                             <label for="jumlah_alsintan_eksisting" class="block text-[11px] font-bold text-obsidian mb-1" title="Jumlah alat sejenis yang sudah dimiliki kelompok saat ini">
                                 Sudah Punya? (Unit)
                             </label>
-                            <input type="number" id="jumlah_alsintan_eksisting" name="jumlah_alsintan_eksisting" value="{{ old('jumlah_alsintan_eksisting', 0) }}" min="0" max="50" step="1" required
+                            <input type="number" id="jumlah_alsintan_eksisting" name="jumlah_alsintan_eksisting" value="{{ old('jumlah_alsintan_eksisting', 0) }}" min="0" max="50" step="1"
                                    class="no-spin tabular-nums w-full px-3.5 py-3 bg-bone-canvas/70 border-2 border-bone-slate rounded-xl text-sm font-black text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('jumlah_alsintan_eksisting') border-red-500 @enderror">
                             <span class="text-[10px] text-muted-green block mt-0.5 font-semibold">Ketik 0 jika belum punya</span>
                             @error('jumlah_alsintan_eksisting') <p class="text-xs text-red-600 mt-1 font-semibold">{{ $message }}</p> @enderror
@@ -267,7 +318,7 @@
                     <label for="alasan_pengajuan" class="block text-xs sm:text-sm font-black text-forest-dark uppercase tracking-wider mb-1.5">
                         Langkah 3: Alasan & Cerita Kebutuhan di Sawah <span class="text-red-500">*</span>
                     </label>
-                    <textarea id="alasan_pengajuan" name="alasan_pengajuan" rows="3" required 
+                    <textarea id="alasan_pengajuan" name="alasan_pengajuan" rows="3" x-model="alasan"
                               placeholder="Contoh: Kami sangat membutuhkan Combine Harvester karena hamparan sawah 38.5 Ha di Desa Gunungsari sering kekurangan tenaga panen manual saat musim hujan tiba..."
                               class="w-full px-4 py-3 bg-bone-canvas/70 border-2 border-bone-slate rounded-2xl text-sm text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('alasan_pengajuan') border-red-500 @enderror">{{ old('alasan_pengajuan') }}</textarea>
                     <p class="text-[11px] text-muted-green mt-1">
@@ -692,14 +743,14 @@
                 </button>
             </div>
 
-            <form action="{{ route('poktan.profil.update') }}" method="POST" class="space-y-4">
+            <form action="{{ route('poktan.profil.update') }}" method="POST" novalidate class="space-y-4">
                 @csrf
                 @method('PUT')
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
                         <label for="edit_nama_poktan" class="block text-xs font-bold text-obsidian mb-1">Nama Kelompok Tani *</label>
-                        <input type="text" id="edit_nama_poktan" name="nama_poktan" value="{{ old('nama_poktan', $poktan?->nama_poktan) }}" required
+                        <input type="text" id="edit_nama_poktan" name="nama_poktan" value="{{ old('nama_poktan', $poktan?->nama_poktan) }}"
                                class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
                     </div>
                     <div>
@@ -712,12 +763,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
                         <label for="edit_nama_ketua" class="block text-xs font-bold text-obsidian mb-1">Nama Ketua Poktan *</label>
-                        <input type="text" id="edit_nama_ketua" name="nama_ketua" value="{{ old('nama_ketua', $poktan?->nama_ketua) }}" required
+                        <input type="text" id="edit_nama_ketua" name="nama_ketua" value="{{ old('nama_ketua', $poktan?->nama_ketua) }}"
                                class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
                     </div>
                     <div>
                         <label for="edit_no_hp" class="block text-xs font-bold text-obsidian mb-1">Nomor HP / WhatsApp *</label>
-                        <input type="text" id="edit_no_hp" name="no_hp_ketua" value="{{ old('no_hp_ketua', $poktan?->no_hp_ketua) }}" required
+                        <input type="text" id="edit_no_hp" name="no_hp_ketua" value="{{ old('no_hp_ketua', $poktan?->no_hp_ketua) }}"
                                class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
                     </div>
                 </div>

@@ -465,7 +465,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">person</span>
                                 </div>
-                                <input type="text" id="name" name="name" x-model="name" value="{{ old('name') }}" required 
+                                <input type="text" id="name" name="name" x-model="name" value="{{ old('name') }}" 
                                        placeholder="Contoh: H. Ahmad Subandi"
                                        class="w-full pl-10 pr-3.5 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('name') border-red-500 @enderror">
                             </div>
@@ -481,7 +481,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">mail</span>
                                 </div>
-                                <input type="email" id="email" name="email" x-model="email" value="{{ old('email') }}" required 
+                                <input type="email" id="email" name="email" x-model="email" value="{{ old('email') }}" 
                                        placeholder="poktan.nama@gmail.com"
                                        class="w-full pl-10 pr-3.5 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('email') border-red-500 @enderror">
                             </div>
@@ -497,7 +497,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">lock</span>
                                 </div>
-                                <input type="password" id="password" name="password" x-model="password" required 
+                                <input type="password" id="password" name="password" x-model="password" 
                                        placeholder="Minimal 8 karakter"
                                        class="w-full pl-10 pr-10 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('password') border-red-500 @enderror">
                                 <button type="button" onclick="togglePasswordVisibility('password', 'pw-icon-1')" aria-label="Tampilkan atau sembunyikan kata sandi" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-green hover:text-obsidian transition">
@@ -517,7 +517,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">lock_reset</span>
                                 </div>
-                                <input type="password" id="password_confirmation" name="password_confirmation" x-model="password_confirmation" required 
+                                <input type="password" id="password_confirmation" name="password_confirmation" x-model="password_confirmation" 
                                        placeholder="Ulangi kata sandi di atas"
                                        class="w-full pl-10 pr-10 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition">
                                 <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'pw-icon-2')" aria-label="Tampilkan atau sembunyikan ulangi kata sandi" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-green hover:text-obsidian transition">
@@ -712,7 +712,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">home_pin</span>
                                 </div>
-                                <input type="text" id="desa" name="desa" x-model="desa" value="{{ old('desa') }}" required 
+                                <input type="text" id="desa" name="desa" x-model="desa" value="{{ old('desa') }}" 
                                        placeholder="Nama Desa"
                                        class="w-full pl-10 pr-3.5 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('desa') border-red-500 @enderror">
                             </div>
@@ -728,7 +728,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">landscape</span>
                                 </div>
-                                <input type="number" step="0.1" min="0.1" id="luas_lahan_total" name="luas_lahan_total" x-model="luas_lahan_total" value="{{ old('luas_lahan_total', '25.0') }}" required 
+                                <input type="number" step="0.1" min="0.1" id="luas_lahan_total" name="luas_lahan_total" x-model="luas_lahan_total" value="{{ old('luas_lahan_total', '25.0') }}" 
                                        class="no-spin tabular-nums w-full pl-10 pr-14 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-extrabold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('luas_lahan_total') border-red-500 @enderror">
                                 <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-bold text-muted-green">Ha</span>
                             </div>
@@ -744,7 +744,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">group</span>
                                 </div>
-                                <input type="number" min="1" id="jumlah_anggota" name="jumlah_anggota" x-model="jumlah_anggota" value="{{ old('jumlah_anggota', '30') }}" required 
+                                <input type="number" min="1" id="jumlah_anggota" name="jumlah_anggota" x-model="jumlah_anggota" value="{{ old('jumlah_anggota', '30') }}" 
                                        class="no-spin tabular-nums w-full pl-10 pr-16 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-extrabold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('jumlah_anggota') border-red-500 @enderror">
                                 <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-bold text-muted-green">Orang</span>
                             </div>

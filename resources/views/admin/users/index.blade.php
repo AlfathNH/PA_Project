@@ -9,6 +9,18 @@
         showCreatePwConfirm: false,
         resetModalOpen: false,
         editModalOpen: false,
+        toggleStatusModalOpen: false,
+
+        // Data Toggle Status
+        toggleStatusUrl: '',
+        toggleStatusName: '',
+        toggleStatusIsActive: true,
+        openToggleStatus(url, name, isActive) {
+            this.toggleStatusUrl = url;
+            this.toggleStatusName = name;
+            this.toggleStatusIsActive = isActive;
+            this.toggleStatusModalOpen = true;
+        },
 
         // Data Reset Password
         resetUserId: null,
@@ -299,26 +311,23 @@
                         </button>
 
                         @if($user->id !== Auth::id())
-                            <form action="{{ route('admin.users.toggle_status', $user->id) }}" method="POST" class="inline">
-                                @csrf
-                                @if($user->is_active)
-                                    <button type="submit"
-                                            onclick="return confirm('Apakah Anda yakin ingin menonaktifkan / membekukan akun ini? Pengguna tidak akan dapat masuk ke sistem.')"
-                                            class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold bg-white hover:bg-red-50 text-red-700 border border-bone-slate hover:border-red-200 transition flex items-center justify-center cursor-pointer"
-                                            aria-label="Bekukan akun {{ $user->name }}"
-                                            title="Bekukan akun">
-                                        <span class="material-symbols-outlined text-base">block</span>
-                                    </button>
-                                @else
-                                    <button type="submit"
-                                            onclick="return confirm('Aktifkan kembali akun ini agar dapat mengakses portal?')"
-                                            class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center cursor-pointer"
-                                            aria-label="Aktifkan kembali akun {{ $user->name }}"
-                                            title="Aktifkan kembali akun">
-                                        <span class="material-symbols-outlined text-base">check_circle</span>
-                                    </button>
-                                @endif
-                            </form>
+                            @if($user->is_active)
+                                <button type="button"
+                                        @click="openToggleStatus('{{ route('admin.users.toggle_status', $user->id) }}', '{{ addslashes($user->name) }}', true)"
+                                        class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold bg-white hover:bg-red-50 text-red-700 border border-bone-slate hover:border-red-200 transition flex items-center justify-center cursor-pointer active:scale-95"
+                                        aria-label="Bekukan akun {{ $user->name }}"
+                                        title="Bekukan akun">
+                                    <span class="material-symbols-outlined text-base">block</span>
+                                </button>
+                            @else
+                                <button type="button"
+                                        @click="openToggleStatus('{{ route('admin.users.toggle_status', $user->id) }}', '{{ addslashes($user->name) }}', false)"
+                                        class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center cursor-pointer active:scale-95"
+                                        aria-label="Aktifkan kembali akun {{ $user->name }}"
+                                        title="Aktifkan kembali akun">
+                                    <span class="material-symbols-outlined text-base">check_circle</span>
+                                </button>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -457,24 +466,21 @@
 
                                     <!-- Tombol Toggle Status (Bekukan / Aktifkan) -->
                                     @if($user->id !== Auth::id())
-                                        <form action="{{ route('admin.users.toggle_status', $user->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @if($user->is_active)
-                                                <button type="submit" 
-                                                        onclick="return confirm('Apakah Anda yakin ingin menonaktifkan / membekukan akun ini? Pengguna tidak akan dapat masuk ke sistem.')"
-                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white hover:bg-red-50 text-red-700 border border-bone-slate hover:border-red-200 transition shadow-2xs cursor-pointer"
-                                                        title="Bekukan akun">
-                                                    <span class="material-symbols-outlined text-sm">block</span>
-                                                </button>
-                                            @else
-                                                <button type="submit" 
-                                                        onclick="return confirm('Aktifkan kembali akun ini agar dapat mengakses portal?')"
-                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-2xs cursor-pointer"
-                                                        title="Aktifkan kembali akun">
-                                                    <span class="material-symbols-outlined text-sm">check_circle</span>
-                                                </button>
-                                            @endif
-                                        </form>
+                                        @if($user->is_active)
+                                            <button type="button" 
+                                                    @click="openToggleStatus('{{ route('admin.users.toggle_status', $user->id) }}', '{{ addslashes($user->name) }}', true)"
+                                                    class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white hover:bg-red-50 text-red-700 border border-bone-slate hover:border-red-200 transition shadow-2xs cursor-pointer active:scale-95"
+                                                    title="Bekukan akun">
+                                                <span class="material-symbols-outlined text-sm">block</span>
+                                            </button>
+                                        @else
+                                            <button type="button" 
+                                                    @click="openToggleStatus('{{ route('admin.users.toggle_status', $user->id) }}', '{{ addslashes($user->name) }}', false)"
+                                                    class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-2xs cursor-pointer active:scale-95"
+                                                    title="Aktifkan kembali akun">
+                                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                            </button>
+                                        @endif
                                     @endif
 
                                 </div>
@@ -860,6 +866,67 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Status Pengguna (Bekukan / Aktifkan) -->
+    <div x-cloak 
+         x-show="toggleStatusModalOpen" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         aria-labelledby="modal-title-toggle-status" 
+         role="dialog" 
+         aria-modal="true"
+         @keydown.escape.window="toggleStatusModalOpen = false">
+        
+        <div x-show="toggleStatusModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-obsidian/60 backdrop-blur-xs transition-opacity"
+             @click="toggleStatusModalOpen = false"></div>
+
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div x-show="toggleStatusModalOpen"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-bone-slate p-6 sm:p-7">
+                
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+                         :class="toggleStatusIsActive ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-forest-dark'">
+                        <span class="material-symbols-outlined text-2xl" x-text="toggleStatusIsActive ? 'block' : 'check_circle'"></span>
+                    </div>
+                    <div class="mt-0.5 text-left flex-1 min-w-0">
+                        <h3 class="text-base sm:text-lg font-black font-urbanist text-obsidian tracking-tight" id="modal-title-toggle-status"
+                            x-text="toggleStatusIsActive ? 'Bekukan Akun Pengguna' : 'Aktifkan Akun Pengguna'"></h3>
+                        <p class="text-xs sm:text-sm text-obsidian/80 mt-1.5 leading-relaxed font-medium">
+                            <span x-text="toggleStatusIsActive ? 'Apakah Anda yakin ingin menonaktifkan akun ' + toggleStatusName + '? Pengguna ini tidak akan dapat login ke portal.' : 'Aktifkan kembali akun ' + toggleStatusName + ' agar dapat mengakses portal dinas?'"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <form :action="toggleStatusUrl" method="POST" class="mt-6 flex flex-col sm:flex-row items-center justify-end gap-2.5">
+                    @csrf
+                    <button type="button" 
+                            @click="toggleStatusModalOpen = false"
+                            class="w-full sm:w-auto px-5 py-2.5 rounded-full border border-bone-slate bg-bone-canvas hover:bg-bone-canvas/80 text-obsidian font-bold text-xs sm:text-sm transition order-2 sm:order-1">
+                        Batal
+                    </button>
+                    <button type="submit"
+                            :class="toggleStatusIsActive ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'"
+                            class="w-full sm:w-auto px-6 py-2.5 rounded-full font-black text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-1.5 active:scale-95 order-1 sm:order-2">
+                        <span class="material-symbols-outlined text-base" x-text="toggleStatusIsActive ? 'block' : 'check_circle'"></span>
+                        <span x-text="toggleStatusIsActive ? 'Ya, Bekukan Akun' : 'Ya, Aktifkan Akun'"></span>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 

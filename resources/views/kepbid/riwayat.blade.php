@@ -3,7 +3,7 @@
 @section('title', 'Riwayat & Rekapitulasi Keputusan Bantuan Alsintan - Dinas Pertanian Kab. Subang')
 
 @section('content')
-<div class="space-y-6 w-full max-w-full min-w-0">
+<div class="space-y-6 w-full max-w-full min-w-0" x-data="{ pruningModal: false }">
 
     <!-- Header Panel Riwayat (Harvesta Style) -->
     <div class="bg-forest-dark text-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden border border-forest-deep">
@@ -36,15 +36,13 @@
             </a>
 
             <!-- Tombol Simulasi Auto-Pruning Berkas (Khusus Demo Sidang) -->
-            <form action="{{ route('kepbid.pruning.run') }}" method="POST" class="inline" onsubmit="return confirm('Jalankan Engine Auto-Pruning untuk mengecek dan membersihkan file PDF yang masa retensinya sudah kedaluwarsa?');">
-                @csrf
-                <button type="submit" 
-                        class="px-4 py-3 rounded-full bg-forest-deep hover:bg-forest-deep/80 text-celery-cream border border-white/20 font-bold text-xs transition flex items-center space-x-1.5"
-                        title="Simulasi pemeriksaan berkas kedaluwarsa">
-                    <span class="material-symbols-outlined text-sm text-amber-harvest">cleaning_services</span>
-                    <span>Cek Auto-Pruning</span>
-                </button>
-            </form>
+            <button type="button" 
+                    @click="pruningModal = true"
+                    class="px-4 py-3 rounded-full bg-forest-deep hover:bg-forest-deep/80 text-celery-cream border border-white/20 font-bold text-xs transition flex items-center space-x-1.5 active:scale-95"
+                    title="Simulasi pemeriksaan berkas kedaluwarsa">
+                <span class="material-symbols-outlined text-sm text-amber-harvest">cleaning_services</span>
+                <span>Cek Auto-Pruning</span>
+            </button>
         </div>
     </div>
 
@@ -372,6 +370,66 @@
                 {{ $riwayatList->links('vendor.pagination.custom-tailwind') }}
             </div>
         @endif
+    </div>
+
+    <!-- Modal Konfirmasi Auto-Pruning -->
+    <div x-cloak 
+         x-show="pruningModal" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         aria-labelledby="modal-title-prune" 
+         role="dialog" 
+         aria-modal="true"
+         @keydown.escape.window="pruningModal = false">
+        
+        <div x-show="pruningModal"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-obsidian/60 backdrop-blur-xs transition-opacity"
+             @click="pruningModal = false"></div>
+
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div x-show="pruningModal"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-bone-slate p-6 sm:p-7">
+                
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-900">
+                        <span class="material-symbols-outlined text-2xl">cleaning_services</span>
+                    </div>
+                    <div class="mt-0.5 text-left flex-1 min-w-0">
+                        <h3 class="text-base sm:text-lg font-black font-urbanist text-obsidian tracking-tight" id="modal-title-prune">
+                            Konfirmasi Eksekusi Auto-Pruning
+                        </h3>
+                        <p class="text-xs sm:text-sm text-obsidian/80 mt-1.5 leading-relaxed font-medium">
+                            Jalankan Engine Auto-Pruning untuk mengecek dan membersihkan berkas proposal PDF yang masa retensinya sudah kedaluwarsa sesuai jadwal SOP dinas?
+                        </p>
+                    </div>
+                </div>
+
+                <form action="{{ route('kepbid.pruning.run') }}" method="POST" class="mt-6 flex flex-col sm:flex-row items-center justify-end gap-2.5">
+                    @csrf
+                    <button type="button" 
+                            @click="pruningModal = false"
+                            class="w-full sm:w-auto px-5 py-2.5 rounded-full border border-bone-slate bg-bone-canvas hover:bg-bone-canvas/80 text-obsidian font-bold text-xs sm:text-sm transition order-2 sm:order-1">
+                        Batal
+                    </button>
+                    <button type="submit"
+                            class="w-full sm:w-auto px-6 py-2.5 rounded-full font-black text-xs sm:text-sm bg-forest-dark hover:bg-forest-deep text-lime-harvest transition shadow-md flex items-center justify-center gap-1.5 active:scale-95 order-1 sm:order-2">
+                        <span class="material-symbols-outlined text-base">play_arrow</span>
+                        <span>Jalankan Pruning</span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
 </div>

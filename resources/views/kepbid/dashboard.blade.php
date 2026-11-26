@@ -3,7 +3,29 @@
 @section('title', 'Persetujuan Pimpinan (ACC) - Kepala Bidang Dinas Pertanian')
 
 @section('content')
-<div class="space-y-6 w-full max-w-full min-w-0">
+<div class="space-y-6 w-full max-w-full min-w-0"
+     x-data="{
+        confirmModalOpen: false,
+        confirmActionUrl: '',
+        confirmKeputusan: '',
+        confirmCatatan: '',
+        confirmTitle: '',
+        confirmDesc: '',
+        confirmBtnText: '',
+        confirmBtnClass: '',
+        confirmIcon: '',
+        openConfirmModal(url, keputusan, catatan, title, desc, btnText, btnClass, icon) {
+            this.confirmActionUrl = url;
+            this.confirmKeputusan = keputusan;
+            this.confirmCatatan = catatan;
+            this.confirmTitle = title;
+            this.confirmDesc = desc;
+            this.confirmBtnText = btnText;
+            this.confirmBtnClass = btnClass;
+            this.confirmIcon = icon;
+            this.confirmModalOpen = true;
+        }
+     }">
 
     <!-- Header Panel Kepala Bidang (Harvesta Executive Style) -->
     <div class="bg-forest-dark text-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden border border-forest-deep">
@@ -321,17 +343,21 @@
 
                                 <div class="pt-2 border-t border-bone-slate/60 grid grid-cols-2 gap-2">
                                     @if($bisaDiAcc)
-                                        <form action="{{ route('kepbid.putuskan', $item->id) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="keputusan" value="setuju">
-                                            <input type="hidden" name="catatan_kepbid" value="Disetujui berdasarkan rekomendasi peringkat TOPSIS.">
-                                            <button type="submit"
-                                                    class="w-full px-3 py-2.5 min-h-[44px] rounded-full text-xs font-extrabold bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian transition shadow-sm border border-black/10 flex items-center justify-center gap-1"
-                                                    onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI (ACC) usulan {{ $item->nomor_pengajuan }} ({{ $item->user?->kelompokTani?->nama_poktan }})? Alokasi kuota alat akan berkurang {{ $item->jumlah_diminta }} unit.');">
-                                                <span class="material-symbols-outlined text-sm">check</span>
-                                                <span>Setujui (ACC)</span>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                @click="openConfirmModal(
+                                                    '{{ route('kepbid.putuskan', $item->id) }}',
+                                                    'setuju',
+                                                    'Disetujui berdasarkan rekomendasi peringkat TOPSIS.',
+                                                    'Persetujuan Usulan Bantuan Alsintan',
+                                                    'Apakah Anda yakin ingin MENYETUJUI usulan {{ $item->nomor_pengajuan }} ({{ $item->user?->kelompokTani?->nama_poktan }})? Alokasi kuota alat akan berkurang {{ $item->jumlah_diminta }} unit.',
+                                                    'Ya, Setujui Usulan',
+                                                    'bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian border border-black/10',
+                                                    'check_circle'
+                                                )"
+                                                class="w-full px-3 py-2.5 min-h-[44px] rounded-full text-xs font-extrabold bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian transition shadow-sm border border-black/10 flex items-center justify-center gap-1 active:scale-95">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            <span>Setujui (ACC)</span>
+                                        </button>
                                     @else
                                         <div class="w-full inline-flex items-center justify-center px-3 py-2.5 min-h-[44px] rounded-full text-[11px] font-bold bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed">
                                             <span class="material-symbols-outlined text-xs mr-1">lock</span>
@@ -339,17 +365,21 @@
                                         </div>
                                     @endif
 
-                                    <form action="{{ route('kepbid.putuskan', $item->id) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="keputusan" value="tolak">
-                                        <input type="hidden" name="catatan_kepbid" value="Ditolak karena keterbatasan kuota alokasi bantuan tahun ini.">
-                                        <button type="submit"
-                                                class="w-full px-3 py-2.5 min-h-[44px] rounded-full text-xs font-bold bg-white hover:bg-amber-100 text-obsidian transition border border-bone-slate flex items-center justify-center gap-1"
-                                                onclick="return confirm('Apakah Anda yakin ingin MENOLAK usulan ini? Usulan akan dipindahkan ke Riwayat dengan masa retensi berkas 90 hari.');">
-                                            <span class="material-symbols-outlined text-sm text-red-600">close</span>
-                                            <span>Tolak</span>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            @click="openConfirmModal(
+                                                '{{ route('kepbid.putuskan', $item->id) }}',
+                                                'tolak',
+                                                'Ditolak karena keterbatasan kuota alokasi bantuan tahun ini.',
+                                                'Penolakan Usulan Bantuan Alsintan',
+                                                'Apakah Anda yakin ingin MENOLAK usulan {{ $item->nomor_pengajuan }} ({{ $item->user?->kelompokTani?->nama_poktan }})? Usulan akan dipindahkan ke Riwayat dengan masa retensi berkas 90 hari.',
+                                                'Ya, Tolak Usulan',
+                                                'bg-red-600 hover:bg-red-700 text-white',
+                                                'cancel'
+                                            )"
+                                            class="w-full px-3 py-2.5 min-h-[44px] rounded-full text-xs font-bold bg-white hover:bg-red-50 text-obsidian transition border border-bone-slate flex items-center justify-center gap-1 active:scale-95">
+                                        <span class="material-symbols-outlined text-sm text-red-600">close</span>
+                                        <span>Tolak</span>
+                                    </button>
                                 </div>
                             </div>
                         @endforeach
@@ -416,18 +446,21 @@
                                                 @endphp
 
                                                 @if($bisaDiAcc)
-                                                    <!-- Form Setuju (ACC) - Vibrant Lime Harvest Button -->
-                                                    <form action="{{ route('kepbid.putuskan', $item->id) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        <input type="hidden" name="keputusan" value="setuju">
-                                                        <input type="hidden" name="catatan_kepbid" value="Disetujui berdasarkan rekomendasi peringkat TOPSIS.">
-                                                        <button type="submit" 
-                                                                class="px-4 py-2.5 min-h-[44px] rounded-full text-xs font-extrabold bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian transition shadow-sm border border-black/10 flex items-center space-x-1.5 active:scale-[0.98]"
-                                                                onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI (ACC) usulan {{ $item->nomor_pengajuan }} ({{ $item->user?->kelompokTani?->nama_poktan }})? Alokasi kuota alat akan berkurang {{ $item->jumlah_diminta }} unit.');">
-                                                            <span class="material-symbols-outlined text-sm">check</span>
-                                                            <span>Setujui (ACC)</span>
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" 
+                                                            @click="openConfirmModal(
+                                                                '{{ route('kepbid.putuskan', $item->id) }}',
+                                                                'setuju',
+                                                                'Disetujui berdasarkan rekomendasi peringkat TOPSIS.',
+                                                                'Persetujuan Usulan Bantuan Alsintan',
+                                                                'Apakah Anda yakin ingin MENYETUJUI usulan {{ $item->nomor_pengajuan }} ({{ $item->user?->kelompokTani?->nama_poktan }})? Alokasi kuota alat akan berkurang {{ $item->jumlah_diminta }} unit.',
+                                                                'Ya, Setujui Usulan',
+                                                                'bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian border border-black/10',
+                                                                'check_circle'
+                                                            )"
+                                                            class="px-4 py-2.5 min-h-[44px] rounded-full text-xs font-extrabold bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian transition shadow-sm border border-black/10 flex items-center space-x-1.5 active:scale-[0.98]">
+                                                        <span class="material-symbols-outlined text-sm">check</span>
+                                                        <span>Setujui (ACC)</span>
+                                                    </button>
                                                 @else
                                                     <!-- Kuota Habis: Tombol Terkunci Aman -->
                                                     <div class="inline-flex items-center px-3.5 py-2.5 min-h-[44px] rounded-full text-xs font-bold bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed select-none" 
@@ -437,18 +470,21 @@
                                                     </div>
                                                 @endif
 
-                                                <!-- Form Tolak - Amber Harvest Button -->
-                                                <form action="{{ route('kepbid.putuskan', $item->id) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    <input type="hidden" name="keputusan" value="tolak">
-                                                    <input type="hidden" name="catatan_kepbid" value="Ditolak karena keterbatasan kuota alokasi bantuan tahun ini.">
-                                                    <button type="submit" 
-                                                            class="px-3.5 py-2.5 min-h-[44px] rounded-full text-xs font-bold bg-bone-canvas hover:bg-amber-100 text-obsidian transition border border-bone-slate flex items-center space-x-1"
-                                                            onclick="return confirm('Apakah Anda yakin ingin MENOLAK usulan ini? Usulan akan dipindahkan ke Riwayat dengan masa retensi berkas 90 hari.');">
-                                                        <span class="material-symbols-outlined text-sm text-red-600">close</span>
-                                                        <span>Tolak</span>
-                                                    </button>
-                                                </form>
+                                                <button type="button" 
+                                                        @click="openConfirmModal(
+                                                            '{{ route('kepbid.putuskan', $item->id) }}',
+                                                            'tolak',
+                                                            'Ditolak karena keterbatasan kuota alokasi bantuan tahun ini.',
+                                                            'Penolakan Usulan Bantuan Alsintan',
+                                                            'Apakah Anda yakin ingin MENOLAK usulan {{ $item->nomor_pengajuan }} ({{ $item->user?->kelompokTani?->nama_poktan }})? Usulan akan dipindahkan ke Riwayat dengan masa retensi berkas 90 hari.',
+                                                            'Ya, Tolak Usulan',
+                                                            'bg-red-600 hover:bg-red-700 text-white',
+                                                            'cancel'
+                                                        )"
+                                                        class="px-3.5 py-2.5 min-h-[44px] rounded-full text-xs font-bold bg-bone-canvas hover:bg-red-50 text-obsidian transition border border-bone-slate flex items-center space-x-1 active:scale-[0.98]">
+                                                    <span class="material-symbols-outlined text-sm text-red-600">close</span>
+                                                    <span>Tolak</span>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -615,6 +651,72 @@
             </div>
         @endif
 
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL KONFIRMASI KEPUTUSAN KEPBID (POP-UP ANIMASI HALUS & KONTRAST TINGGI) -->
+    <!-- ========================================================================= -->
+    <div x-cloak 
+         x-show="confirmModalOpen" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         aria-labelledby="modal-title" 
+         role="dialog" 
+         aria-modal="true"
+         @keydown.escape.window="confirmModalOpen = false">
+        
+        <!-- Backdrop Blur Transparan -->
+        <div x-show="confirmModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-obsidian/60 backdrop-blur-xs transition-opacity"
+             @click="confirmModalOpen = false"></div>
+
+        <!-- Wadah Kotak Dialog Modal -->
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div x-show="confirmModalOpen"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-bone-slate p-6 sm:p-7">
+                
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+                         :class="confirmKeputusan === 'setuju' ? 'bg-emerald-100 text-forest-dark' : 'bg-red-100 text-red-700'">
+                        <span class="material-symbols-outlined text-2xl" x-text="confirmIcon"></span>
+                    </div>
+                    <div class="mt-0.5 text-left flex-1 min-w-0">
+                        <h3 class="text-base sm:text-lg font-black font-urbanist text-obsidian tracking-tight" id="modal-title" x-text="confirmTitle"></h3>
+                        <p class="text-xs sm:text-sm text-obsidian/80 mt-1.5 leading-relaxed font-medium" x-text="confirmDesc"></p>
+                    </div>
+                </div>
+
+                <!-- Form Submit Keputusan -->
+                <form :action="confirmActionUrl" method="POST" class="mt-6 flex flex-col sm:flex-row items-center justify-end gap-2.5">
+                    @csrf
+                    <input type="hidden" name="keputusan" :value="confirmKeputusan">
+                    <input type="hidden" name="catatan_kepbid" :value="confirmCatatan">
+                    
+                    <button type="button" 
+                            @click="confirmModalOpen = false"
+                            class="w-full sm:w-auto px-5 py-2.5 rounded-full border border-bone-slate bg-bone-canvas hover:bg-bone-canvas/80 text-obsidian font-bold text-xs sm:text-sm transition order-2 sm:order-1">
+                        Batal
+                    </button>
+                    <button type="submit"
+                            :class="confirmBtnClass"
+                            class="w-full sm:w-auto px-6 py-2.5 rounded-full font-black text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-1.5 active:scale-95 order-1 sm:order-2">
+                        <span class="material-symbols-outlined text-base" x-text="confirmIcon"></span>
+                        <span x-text="confirmBtnText"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
 </div>

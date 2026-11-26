@@ -128,7 +128,7 @@ class DashboardController extends Controller
                 }
             });
 
-            return redirect()->route('poktan.dashboard')->with('success', "Permohonan usulan {$nomorPengajuan} berhasil diajukan dan tercatat dalam sistem. Menunggu tahapan verifikasi berkas oleh Admin Dinas.");
+            return redirect()->route('poktan.dashboard', ['tab' => 'status'])->with('success', "Permohonan usulan {$nomorPengajuan} berhasil diajukan dan tercatat dalam sistem. Menunggu tahapan verifikasi berkas oleh Admin Dinas.");
         } catch (\Throwable $e) {
             // Hapus berkas fisik jika transaksi database dibatalkan (rollback)
             if ($storedPath && Storage::disk('private')->exists($storedPath)) {
