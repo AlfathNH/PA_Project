@@ -33,8 +33,13 @@ class DashboardController extends Controller
             ->paginate(5);
 
         $jenisAlsintans = JenisAlsintan::aktif()->get();
+        $sudahUlasan = false;
+        if ($poktan) {
+            $sudahUlasan = \App\Models\UlasanLayanan::where('kelompok_tani_id', $poktan->id)->exists();
+        }
+        $latestPengajuan = PengajuanBantuan::where('user_id', $user->id)->latest()->first();
 
-        return view('poktan.dashboard', compact('user', 'poktan', 'pengajuans', 'jenisAlsintans'));
+        return view('poktan.dashboard', compact('user', 'poktan', 'pengajuans', 'jenisAlsintans', 'sudahUlasan', 'latestPengajuan'));
     }
 
     /**
@@ -128,7 +133,10 @@ class DashboardController extends Controller
                 }
             });
 
-            return redirect()->route('poktan.dashboard', ['tab' => 'status'])->with('success', "Permohonan usulan {$nomorPengajuan} berhasil diajukan dan tercatat dalam sistem. Menunggu tahapan verifikasi berkas oleh Admin Dinas.");
+            return redirect()->route('poktan.dashboard', ['tab' => 'status'])
+                ->with('success', "Permohonan usulan {$nomorPengajuan} berhasil diajukan dan tercatat dalam sistem. Menunggu tahapan verifikasi berkas oleh Admin Dinas.")
+                ->with('show_rating_popup', true)
+                ->with('baru_diajukan_id', $pengajuan->id);
         } catch (\Throwable $e) {
             // Hapus berkas fisik jika transaksi database dibatalkan (rollback)
             if ($storedPath && Storage::disk('private')->exists($storedPath)) {

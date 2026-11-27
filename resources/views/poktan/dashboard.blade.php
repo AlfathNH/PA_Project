@@ -11,8 +11,25 @@
                 ? 'form'
                 : 'status'));
 @endphp
-<div x-data="{ mobileTab: '{{ $initialMobileTab }}', editProfileModal: false }"
+<div x-data="{ 
+        mobileTab: '{{ $initialMobileTab }}', 
+        editProfileModal: false,
+        ratingModal: {{ session('show_rating_popup') ? 'true' : 'false' }},
+        ratingScore: 5,
+        ratingHover: 5,
+        getRatingLabel() {
+            const labels = {
+                1: 'Sangat Kurang Memuaskan ⭐',
+                2: 'Kurang Memuaskan ⭐⭐',
+                3: 'Cukup Baik & Terbantu ⭐⭐⭐',
+                4: 'Puas & Pelayanan Ramah ⭐⭐⭐⭐',
+                5: 'Sangat Puas & Transparan ⭐⭐⭐⭐⭐'
+            };
+            return labels[this.ratingHover || this.ratingScore] || '';
+        }
+     }"
      @open-poktan-profile-modal.window="editProfileModal = true"
+     @open-rating-modal.window="ratingModal = true"
      class="space-y-4 sm:space-y-6 pb-36 sm:pb-40 lg:pb-8 relative">
 
     <!-- Ringkasan Identitas Poktan Ringkas (Tampil di Mobile saat tab Status / Ajukan aktif) -->
@@ -25,12 +42,21 @@
                 {{ number_format($poktan?->luas_lahan_total ?? 0, 1) }} Ha &bull; {{ $poktan?->jumlah_anggota ?? 0 }} Petani &bull; Kec. {{ $poktan?->kecamatan ?? '-' }}
             </p>
         </div>
-        <button type="button"
-                @click="editProfileModal = false; mobileTab = 'profil'; window.scrollTo({ top: 0, behavior: 'smooth' })"
-                class="shrink-0 min-h-[44px] px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-lime-harvest text-xs font-bold border border-white/15 inline-flex items-center gap-1 transition">
-            <span class="material-symbols-outlined text-base">manage_accounts</span>
-            <span>Profil</span>
-        </button>
+        <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button"
+                    @click="ratingModal = true"
+                    title="Beri Ulasan Layanan (IKM)"
+                    class="min-h-[44px] px-2.5 py-2 rounded-xl bg-lime-harvest text-obsidian text-xs font-black inline-flex items-center gap-1 transition shadow-xs active:scale-95">
+                <span class="material-symbols-outlined text-base">hotel_class</span>
+                <span class="hidden sm:inline">Ulasan</span>
+            </button>
+            <button type="button"
+                    @click="editProfileModal = false; mobileTab = 'profil'; window.scrollTo({ top: 0, behavior: 'smooth' })"
+                    class="min-h-[44px] px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-lime-harvest text-xs font-bold border border-white/15 inline-flex items-center gap-1 transition">
+                <span class="material-symbols-outlined text-base">manage_accounts</span>
+                <span>Profil</span>
+            </button>
+        </div>
     </div>
 
     <!-- ========================================================================= -->
@@ -78,13 +104,19 @@
                     </div>
                 </div>
 
-                <!-- Tombol Edit / Perbarui Data Profil & Hamparan Poktan (Khusus Desktop karena Mobile sudah tampil inline di tab Profil) -->
-                <div class="hidden lg:block pt-2">
+                <!-- Tombol Edit Data Poktan & Tombol Survei Kepuasan (IKM) -->
+                <div class="hidden lg:flex items-center gap-3 pt-2">
                     <button type="button" 
                             @click="editProfileModal = true"
                             class="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full text-xs font-black bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian border border-black/10 transition shadow-sm active:scale-95">
                         <span class="material-symbols-outlined text-base">edit_note</span>
                         <span>Perbarui Data Hamparan & Anggota Poktan</span>
+                    </button>
+                    <button type="button" 
+                            @click="ratingModal = true"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full text-xs font-black bg-white/10 hover:bg-white/20 text-lime-harvest border border-white/20 transition shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-base">hotel_class</span>
+                        <span>Survei Kepuasan (IKM)</span>
                     </button>
                 </div>
             </div>
@@ -907,6 +939,115 @@
                             class="px-5 py-2.5 min-h-[44px] rounded-full text-xs font-black bg-lime-harvest hover:bg-lime-harvest-hover text-obsidian transition shadow-sm border border-black/10 flex items-center space-x-1.5 active:scale-95">
                         <span class="material-symbols-outlined text-sm">save</span>
                         <span>Simpan Perubahan Profil</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL POP-UP: SURVEI KEPUASAN & RATING LAYANAN (IKM - TABEL KE-10)       -->
+    <!-- Animasi Halus & Interaktif, Bersifat Opsional                             -->
+    <!-- ========================================================================= -->
+    <div x-cloak
+         x-show="ratingModal"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 bg-obsidian/70 backdrop-blur-sm flex items-center justify-center p-4">
+
+        <div @click.away="ratingModal = false"
+             x-show="ratingModal"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+             class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-forest-dark/20 shadow-2xl relative space-y-5">
+
+            <!-- Tombol Tutup Silang di Kanan Atas -->
+            <button type="button"
+                    @click="ratingModal = false"
+                    class="absolute top-4 right-4 text-muted-green hover:text-obsidian p-1 rounded-full hover:bg-bone-canvas transition">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <!-- Header Modal -->
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-lime-harvest/30 border border-lime-harvest text-forest-dark flex items-center justify-center shadow-inner">
+                    <span class="material-symbols-outlined text-3xl text-forest-dark">hotel_class</span>
+                </div>
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 inline-block mb-1">
+                        Survei Kepuasan Layanan (IKM)
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-black text-forest-dark font-urbanist">
+                        Bagaimana Pengalaman Anda?
+                    </h3>
+                    <p class="text-xs text-muted-green leading-relaxed mt-1">
+                        Bantu Dinas Pertanian Kabupaten Subang meningkatkan mutu pelayanan hibah alsintan melalui penilaian Anda (opsional).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Form Penilaian -->
+            <form method="POST" action="{{ route('poktan.ulasan.store') }}" class="space-y-4">
+                @csrf
+                <input type="hidden" name="pengajuan_bantuan_id" value="{{ session('baru_diajukan_id', $latestPengajuan?->id) }}">
+                <input type="hidden" name="rating_bintang" :value="ratingScore">
+
+                <!-- Interaktif 5 Bintang -->
+                <div class="bg-bone-canvas/80 p-4 rounded-2xl border border-bone-slate text-center space-y-2">
+                    <span class="text-xs font-bold text-obsidian block">Pilih Rating Bintang:</span>
+                    <div class="flex items-center justify-center gap-1 sm:gap-2">
+                        <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
+                            <button type="button"
+                                    @click="ratingScore = star; ratingHover = star"
+                                    @mouseenter="ratingHover = star"
+                                    @mouseleave="ratingHover = ratingScore"
+                                    class="p-1 rounded-lg transition transform hover:scale-125 focus:outline-hidden cursor-pointer"
+                                    :title="star + ' Bintang'">
+                                <span class="material-symbols-outlined text-3xl sm:text-4xl transition-colors"
+                                      :class="(ratingHover || ratingScore) >= star ? 'text-amber-500' : 'text-gray-300'"
+                                      :style="(ratingHover || ratingScore) >= star ? 'font-variation-settings: \'FILL\' 1;' : ''">
+                                    star
+                                </span>
+                            </button>
+                        </template>
+                    </div>
+                    <!-- Label Dinamis Rating -->
+                    <div class="text-xs font-extrabold text-forest-dark min-h-[18px]" x-text="getRatingLabel()"></div>
+                </div>
+
+                <!-- Input Komentar / Masukan -->
+                <div>
+                    <label for="komentar_ulasan" class="block text-xs font-bold text-obsidian mb-1">
+                        Ulasan atau Saran Perbaikan <span class="text-[10px] text-muted-green font-normal">(Opsional)</span>
+                    </label>
+                    <textarea id="komentar_ulasan" 
+                              name="komentar" 
+                              rows="3" 
+                              maxlength="1000"
+                              placeholder="Tuliskan pengalaman atau kendala yang dihadapi selama proses pengajuan..."
+                              class="w-full px-3.5 py-2.5 rounded-2xl border border-bone-slate bg-bone-canvas/60 text-xs text-obsidian placeholder:text-muted-green/60 focus:ring-2 focus:ring-forest-dark focus:bg-white transition resize-none"></textarea>
+                </div>
+
+                <!-- Aksi: Kirim & Lewati -->
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" 
+                            @click="ratingModal = false" 
+                            class="px-4 py-2.5 rounded-xl border border-bone-slate bg-white hover:bg-bone-canvas text-xs font-bold text-muted-green transition">
+                        Nanti Saja / Lewati
+                    </button>
+                    <button type="submit" 
+                            class="px-5 py-2.5 rounded-xl bg-forest-dark hover:bg-forest-hover text-lime-harvest font-black text-xs shadow-md flex items-center gap-1.5 transition">
+                        <span class="material-symbols-outlined text-base">send</span>
+                        <span>Kirim Penilaian</span>
                     </button>
                 </div>
             </form>

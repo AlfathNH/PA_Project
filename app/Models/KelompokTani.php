@@ -52,5 +52,11 @@ class KelompokTani extends Model
     {
         return $this->hasMany(PengajuanBantuan::class, 'user_id', 'user_id');
     }
+
+    // Relasi ke tabel ke-10: Ulasan Layanan & IKM
+    public function ulasans(): HasMany
+    {
+        return $this->hasMany(UlasanLayanan::class, 'kelompok_tani_id');
+    }
 }
 

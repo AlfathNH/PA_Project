@@ -209,25 +209,25 @@ pa-spk-alsintan/
 
 ---
 
-## 6. SKEMA RELASI DATABASE (9 TABEL UTAMA — STANDAR KKNI LEVEL 5)
+## 6. SKEMA RELASI DATABASE (10 TABEL UTAMA — STANDAR KKNI LEVEL 5)
 
-Sesuai dengan **Standar KKNI Level 5 (Program D3 Sistem Informasi)** yang mensyaratkan skema basis data berkisar antara **8 hingga 12 tabel yang saling berelasi**, arsitektur sistem ini mengimplementasikan **9 tabel utama berelasi**:
+Sesuai dengan **Standar KKNI Level 5 (Program D3 Sistem Informasi)** yang mensyaratkan skema basis data berkisar antara **8 hingga 12 tabel yang saling berelasi**, arsitektur sistem ini mengimplementasikan **10 tabel utama berelasi**:
 
 ```
 [kecamatans] (1) ─────────── (N) [kelompok_tanis] (1) ──── (1) [users]
-                                                                │ (1)
-                                                                │ (N)
-[periode_bantuans] (1) ──── (N) [jenis_alsintans] (1) ── (N) [pengajuan_bantuans]
-                                                                │ (1)       │ (1)
-                                 ┌──────────────────────────────┤           │ (N)
-                                 │ (N)                          │ (N)       ▼
+                                        │ (1)                 │ (1)
+                                        │ (N)                 │ (N)
+[periode_bantuans] (1) ──── (N) [jenis_alsintans] (1) ── (N) [pengajuan_bantuans]   [ulasan_layanans] (Tabel ke-10)
+                                                                │ (1)       │ (1)         ▲ (dimoderasi kepbid)
+                                 ┌──────────────────────────────┤           │ (N)         │
+                                 │ (N)                          │ (N)       ▼             │
                        [penilaian_topsis]             [berkas_pengajuans] [riwayat_status_pengajuans]
                                  ▲
                                  │ (N)
                             [kriterias]
 ```
 
-### Rincian 9 Tabel Relasional:
+### Rincian 10 Tabel Relasional:
 1. **`users`**: Entitas aktor sistem (Admin Verifikator Dinas, Kepala Bidang, Kelompok Tani).
 2. **`kelompok_tanis`**: Profil kelembagaan tani, legalitas SK badan hukum, luas hamparan, dan jumlah anggota.
 3. **`kecamatans`** *(Tabel ke-7)*: Master wilayah 30 kecamatan di Kabupaten Subang (terbagi dalam zona Pantura, Tengah, dan Selatan). Berelasi One-to-Many ke `kelompok_tanis`.
@@ -237,6 +237,7 @@ Sesuai dengan **Standar KKNI Level 5 (Program D3 Sistem Informasi)** yang mensya
 7. **`riwayat_status_pengajuans`** *(Tabel ke-9)*: Log audit trail jejak perubahan status pengajuan yang dicatat otomatis via Model Observer.
 8. **`kriterias`**: Parameter penilaian SPK TOPSIS (Luas Lahan, Produktivitas, Kesiapan Poktan, dll.) dengan tipe Benefit/Cost dan bobot dinamis.
 9. **`penilaian_topsis`**: Tabel pivot penilaian alternatif ($x_{ij}$) yang menghubungkan setiap pengajuan bantuan dengan kriteria TOPSIS.
+10. **`ulasan_layanans`** *(Tabel ke-10)*: Survei Kepuasan Masyarakat (IKM) berdasar Permenpan-RB No. 14/2017. Berisi rating bintang 1-5 dan ulasan poktan, dengan moderasi persetujuan oleh Kepala Bidang sebelum ditampilkan ke Landing Page publik.
 
 *Tabel Penunjang:*
 - `hasil_topsis`: Menyimpan nilai jarak Euclidean ($D^+$, $D^-$), nilai preferensi ($V_i$), dan ranking final hasil langkah 5 & 6.

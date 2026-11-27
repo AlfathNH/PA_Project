@@ -264,35 +264,56 @@
                             </a>
                         </div>
 
-                        <!-- Compact Testimonials Carousel Card (Terintegrasi Rapi Tanpa Menumpuk Banner) -->
+                        <!-- Compact Testimonials Carousel Card (Terintegrasi Rapi & Terkurasi Kepala Bidang) -->
+                        @php
+                            $carouselItems = [];
+                            if (isset($ulasanLanding) && $ulasanLanding->isNotEmpty()) {
+                                foreach ($ulasanLanding as $ul) {
+                                    $carouselItems[] = [
+                                        'nama' => ($ul->kelompokTani?->nama_ketua ? 'Bpk/Ibu ' . $ul->kelompokTani->nama_ketua . ' (' . ($ul->kelompokTani?->nama_poktan ?? 'Poktan') . ')' : ($ul->kelompokTani?->nama_poktan ?? 'Kelompok Tani')),
+                                        'skor' => 'Kepuasan: ' . $ul->rating_bintang . '/5 ★',
+                                        'alat' => $ul->pengajuanBantuan?->jenisAlsintan?->nama_alsintan ?? 'Alsintan Terverifikasi',
+                                        'quote' => $ul->komentar ?: 'Pelayanan bantuan alsintan Dinas Pertanian Kab. Subang berjalan profesional, adil, dan transparan.',
+                                        'wilayah' => 'Kec. ' . ($ul->kelompokTani?->kecamatan ?? 'Subang') . ' • Subang'
+                                    ];
+                                }
+                            }
+                            if (count($carouselItems) < 3) {
+                                $defaultItems = [
+                                    [
+                                        'nama' => 'Bpk. Sutarman, Ketua Poktan Sri Rahayu (Pagaden)',
+                                        'skor' => 'Vi = 0,892 (Peringkat #1)',
+                                        'alat' => 'Combine Harvester 2 Unit',
+                                        'quote' => 'Transparansi perhitungan sistem TOPSIS ini menghilangkan keraguan kami. Nilai kedekatan solusi ideal dihitung murni dari luas hamparan sawah dan kesiapan operator poktan tanpa ada intervensi subjektif.',
+                                        'wilayah' => 'Pagaden &bull; Pantura Subang'
+                                    ],
+                                    [
+                                        'nama' => 'H. Endang Sujana, Ketua Poktan Sri Mukti (Gunungsari)',
+                                        'skor' => 'Vi = 0,812 (Peringkat #1)',
+                                        'alat' => 'Traktor Roda 2 (Hand Tractor)',
+                                        'quote' => 'Sebelumnya kami sering terlambat mengolah sawah seluas 38,5 Ha sebelum hujan. Dengan pemeringkatan ilmiah TOPSIS, bantuan traktor terbukti tepat sasaran kepada kelompok yang paling mendesak.',
+                                        'wilayah' => 'Gunungsari &bull; Subang Tengah'
+                                    ],
+                                    [
+                                        'nama' => 'Bpk. Wawan Hermawan, Ketua Poktan Tunas Jaya (Ciasem)',
+                                        'skor' => 'Vi = 0,764 (Peringkat #2)',
+                                        'alat' => 'Pompa Air Irigasi 3-4 Inch',
+                                        'quote' => 'Saat musim kemarau di Pantura Subang, sistem ini adil memprioritaskan hamparan sawah tadah hujan kami. Kami kelompok tani juga bisa memantau tahapan persetujuan langsung lewat HP dengan tenang.',
+                                        'wilayah' => 'Ciasem &bull; Pantura Subang'
+                                    ]
+                                ];
+                                foreach ($defaultItems as $di) {
+                                    if (count($carouselItems) >= 3) break;
+                                    $carouselItems[] = $di;
+                                }
+                            }
+                        @endphp
                         <div class="bg-white rounded-3xl p-5 border border-forest-dark/15 text-obsidian shadow-sm"
                              x-data="{
                                  activeSlide: 0,
-                                 totalSlides: 3,
+                                 totalSlides: {{ count($carouselItems) }},
                                  timer: null,
-                                 testimonials: [
-                                     {
-                                         nama: 'Bpk. Sutarman, Ketua Poktan Sri Rahayu (Pagaden)',
-                                         skor: 'Vi = 0,892 (Peringkat #1)',
-                                         alat: 'Combine Harvester 2 Unit',
-                                         quote: 'Transparansi perhitungan sistem TOPSIS ini menghilangkan keraguan kami. Nilai kedekatan solusi ideal dihitung murni dari luas hamparan sawah dan kesiapan operator poktan tanpa ada intervensi subjektif.',
-                                         wilayah: 'Pagaden &bull; Pantura Subang'
-                                     },
-                                     {
-                                         nama: 'H. Endang Sujana, Ketua Poktan Sri Mukti (Gunungsari)',
-                                         skor: 'Vi = 0,812 (Peringkat #1)',
-                                         alat: 'Traktor Roda 2 (Hand Tractor)',
-                                         quote: 'Sebelumnya kami sering terlambat mengolah sawah seluas 38,5 Ha sebelum hujan. Dengan pemeringkatan ilmiah TOPSIS, bantuan traktor terbukti tepat sasaran kepada kelompok yang paling mendesak.',
-                                         wilayah: 'Gunungsari &bull; Subang Tengah'
-                                     },
-                                     {
-                                         nama: 'Bpk. Wawan Hermawan, Ketua Poktan Tunas Jaya (Ciasem)',
-                                         skor: 'Vi = 0,764 (Peringkat #2)',
-                                         alat: 'Pompa Air Irigasi 3-4 Inch',
-                                         quote: 'Saat musim kemarau di Pantura Subang, sistem ini adil memprioritaskan hamparan sawah tadah hujan kami. Kami kelompok tani juga bisa memantau tahapan persetujuan langsung lewat HP dengan tenang.',
-                                         wilayah: 'Ciasem &bull; Pantura Subang'
-                                     }
-                                 ],
+                                 testimonials: {{ \Illuminate\Support\Js::from($carouselItems) }},
                                  startAutoRotate() {
                                      this.timer = setInterval(() => {
                                          this.activeSlide = (this.activeSlide + 1) % this.totalSlides;
@@ -407,10 +428,10 @@
                                         <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
                                         <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
                                         <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
-                                        <span class="ml-1 text-base font-black text-forest-dark font-urbanist tabular-nums">4,92 / 5,0</span>
+                                        <span class="ml-1 text-base font-black text-forest-dark font-urbanist tabular-nums">{{ number_format($avgRating ?? 4.92, 2, ',', '.') }} / 5,0</span>
                                     </div>
                                     <h4 class="font-bold text-xs sm:text-sm text-obsidian leading-snug">
-                                        Kelompok Tani Binaan Resmi Subang
+                                        Indeks Kepuasan Layanan (IKM) Subang
                                     </h4>
                                 </div>
                             </div>

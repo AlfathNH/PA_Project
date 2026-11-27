@@ -97,6 +97,10 @@
         [x-cloak] {
             display: none !important;
         }
+        @keyframes alertCountdown {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
     </style>
 </head>
 <body class="bg-bone-canvas text-obsidian antialiased min-h-screen flex flex-col topographic-grid overflow-x-hidden w-full max-w-full">
@@ -345,40 +349,267 @@
         </div>
     @endauth
 
-    <!-- Flash Notifications Container -->
+    <!-- Flash Notifications Container (Interaktif: Auto-Dismiss 30 Detik & Swipe Gesture Kiri/Kanan) -->
     <div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 mt-5 w-full">
         @if(isset($errors) && $errors->any())
-            <div class="mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-900 shadow-sm space-y-1">
-                <div class="flex items-center space-x-2 font-bold text-sm text-red-800">
-                    <span class="material-symbols-outlined text-red-600">error</span>
-                    <span>Terdapat kesalahan pada data yang Anda masukkan:</span>
+            <div x-data="{
+                    show: true,
+                    startX: 0,
+                    offsetX: 0,
+                    isSwiping: false,
+                    timer: null,
+                    dismiss() {
+                        if (this.timer) clearTimeout(this.timer);
+                        this.show = false;
+                    },
+                    init() {
+                        this.timer = setTimeout(() => this.dismiss(), 30000);
+                    },
+                    onTouchStart(e) {
+                        this.isSwiping = true;
+                        this.startX = e.touches ? e.touches[0].clientX : e.clientX;
+                    },
+                    onTouchMove(e) {
+                        if (!this.isSwiping) return;
+                        const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                        this.offsetX = currentX - this.startX;
+                    },
+                    onTouchEnd() {
+                        if (!this.isSwiping) return;
+                        this.isSwiping = false;
+                        if (Math.abs(this.offsetX) > 80) {
+                            this.dismiss();
+                        } else {
+                            this.offsetX = 0;
+                        }
+                    }
+                }"
+                x-show="show"
+                x-transition:leave="transition ease-out duration-300 transform"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
+                :style="isSwiping 
+                    ? 'transform: translateX(' + offsetX + 'px); opacity: ' + Math.max(0.2, 1 - Math.abs(offsetX)/250) + '; transition: none;' 
+                    : 'transform: translateX(' + offsetX + 'px); transition: transform 0.25s ease-out, opacity 0.25s ease-out;'"
+                @touchstart="onTouchStart($event)"
+                @touchmove="onTouchMove($event)"
+                @touchend="onTouchEnd()"
+                @mousedown="onTouchStart($event)"
+                @mousemove="onTouchMove($event)"
+                @mouseup="onTouchEnd()"
+                @mouseleave="if(isSwiping) onTouchEnd()"
+                class="relative mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-900 shadow-sm space-y-1 select-none cursor-grab active:cursor-grabbing overflow-hidden group touch-pan-y"
+                role="alert">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2 font-bold text-sm text-red-800">
+                        <span class="material-symbols-outlined text-red-600">error</span>
+                        <span>Terdapat kesalahan pada data yang Anda masukkan:</span>
+                    </div>
+                    <span class="text-[10px] font-semibold text-red-600/70 bg-red-100/70 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">swipe</span> Geser / 30s
+                    </span>
                 </div>
                 <ul class="list-disc list-inside text-xs text-red-700 pl-4 space-y-0.5">
                     @foreach($errors->all() as $err)
                         <li>{{ $err }}</li>
                     @endforeach
                 </ul>
+                <div class="absolute bottom-0 left-0 h-0.5 bg-red-500/40 rounded-full" style="animation: alertCountdown 30s linear forwards;"></div>
             </div>
         @endif
 
         @if(session('success'))
-            <div class="mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start space-x-3 shadow-sm">
-                <span class="material-symbols-outlined text-emerald-600 text-xl">check_circle</span>
-                <div class="text-sm font-semibold">{{ session('success') }}</div>
+            <div x-data="{
+                    show: true,
+                    startX: 0,
+                    offsetX: 0,
+                    isSwiping: false,
+                    timer: null,
+                    dismiss() {
+                        if (this.timer) clearTimeout(this.timer);
+                        this.show = false;
+                    },
+                    init() {
+                        this.timer = setTimeout(() => this.dismiss(), 30000);
+                    },
+                    onTouchStart(e) {
+                        this.isSwiping = true;
+                        this.startX = e.touches ? e.touches[0].clientX : e.clientX;
+                    },
+                    onTouchMove(e) {
+                        if (!this.isSwiping) return;
+                        const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                        this.offsetX = currentX - this.startX;
+                    },
+                    onTouchEnd() {
+                        if (!this.isSwiping) return;
+                        this.isSwiping = false;
+                        if (Math.abs(this.offsetX) > 80) {
+                            this.dismiss();
+                        } else {
+                            this.offsetX = 0;
+                        }
+                    }
+                }"
+                x-show="show"
+                x-transition:leave="transition ease-out duration-300 transform"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
+                :style="isSwiping 
+                    ? 'transform: translateX(' + offsetX + 'px); opacity: ' + Math.max(0.2, 1 - Math.abs(offsetX)/250) + '; transition: none;' 
+                    : 'transform: translateX(' + offsetX + 'px); transition: transform 0.25s ease-out, opacity 0.25s ease-out;'"
+                @touchstart="onTouchStart($event)"
+                @touchmove="onTouchMove($event)"
+                @touchend="onTouchEnd()"
+                @mousedown="onTouchStart($event)"
+                @mousemove="onTouchMove($event)"
+                @mouseup="onTouchEnd()"
+                @mouseleave="if(isSwiping) onTouchEnd()"
+                class="relative mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between gap-3 shadow-sm select-none cursor-grab active:cursor-grabbing overflow-hidden group touch-pan-y"
+                role="alert">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <span class="material-symbols-outlined text-emerald-600 text-xl shrink-0">check_circle</span>
+                    <div class="text-xs sm:text-sm font-semibold leading-relaxed">{{ session('success') }}</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="hidden sm:inline-flex text-[10px] font-semibold text-emerald-700/70 bg-emerald-100/70 px-2 py-0.5 rounded-full items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">swipe</span> Geser / 30s
+                    </span>
+                    <button type="button" @click="dismiss()" class="text-emerald-700/60 hover:text-emerald-900 transition p-1 rounded-lg hover:bg-emerald-100">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
+                <div class="absolute bottom-0 left-0 h-0.5 bg-emerald-500/40 rounded-full" style="animation: alertCountdown 30s linear forwards;"></div>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-900 flex items-start space-x-3 shadow-sm">
-                <span class="material-symbols-outlined text-red-600 text-xl">cancel</span>
-                <div class="text-sm font-semibold">{{ session('error') }}</div>
+            <div x-data="{
+                    show: true,
+                    startX: 0,
+                    offsetX: 0,
+                    isSwiping: false,
+                    timer: null,
+                    dismiss() {
+                        if (this.timer) clearTimeout(this.timer);
+                        this.show = false;
+                    },
+                    init() {
+                        this.timer = setTimeout(() => this.dismiss(), 30000);
+                    },
+                    onTouchStart(e) {
+                        this.isSwiping = true;
+                        this.startX = e.touches ? e.touches[0].clientX : e.clientX;
+                    },
+                    onTouchMove(e) {
+                        if (!this.isSwiping) return;
+                        const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                        this.offsetX = currentX - this.startX;
+                    },
+                    onTouchEnd() {
+                        if (!this.isSwiping) return;
+                        this.isSwiping = false;
+                        if (Math.abs(this.offsetX) > 80) {
+                            this.dismiss();
+                        } else {
+                            this.offsetX = 0;
+                        }
+                    }
+                }"
+                x-show="show"
+                x-transition:leave="transition ease-out duration-300 transform"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
+                :style="isSwiping 
+                    ? 'transform: translateX(' + offsetX + 'px); opacity: ' + Math.max(0.2, 1 - Math.abs(offsetX)/250) + '; transition: none;' 
+                    : 'transform: translateX(' + offsetX + 'px); transition: transform 0.25s ease-out, opacity 0.25s ease-out;'"
+                @touchstart="onTouchStart($event)"
+                @touchmove="onTouchMove($event)"
+                @touchend="onTouchEnd()"
+                @mousedown="onTouchStart($event)"
+                @mousemove="onTouchMove($event)"
+                @mouseup="onTouchEnd()"
+                @mouseleave="if(isSwiping) onTouchEnd()"
+                class="relative mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-900 flex items-center justify-between gap-3 shadow-sm select-none cursor-grab active:cursor-grabbing overflow-hidden group touch-pan-y"
+                role="alert">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <span class="material-symbols-outlined text-red-600 text-xl shrink-0">cancel</span>
+                    <div class="text-xs sm:text-sm font-semibold leading-relaxed">{{ session('error') }}</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="hidden sm:inline-flex text-[10px] font-semibold text-red-700/70 bg-red-100/70 px-2 py-0.5 rounded-full items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">swipe</span> Geser / 30s
+                    </span>
+                    <button type="button" @click="dismiss()" class="text-red-700/60 hover:text-red-900 transition p-1 rounded-lg hover:bg-red-100">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
+                <div class="absolute bottom-0 left-0 h-0.5 bg-red-500/40 rounded-full" style="animation: alertCountdown 30s linear forwards;"></div>
             </div>
         @endif
 
         @if(session('warning'))
-            <div class="mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-harvest/40 text-amber-900 flex items-start space-x-3 shadow-sm">
-                <span class="material-symbols-outlined text-amber-harvest text-xl">warning</span>
-                <div class="text-sm font-semibold">{{ session('warning') }}</div>
+            <div x-data="{
+                    show: true,
+                    startX: 0,
+                    offsetX: 0,
+                    isSwiping: false,
+                    timer: null,
+                    dismiss() {
+                        if (this.timer) clearTimeout(this.timer);
+                        this.show = false;
+                    },
+                    init() {
+                        this.timer = setTimeout(() => this.dismiss(), 30000);
+                    },
+                    onTouchStart(e) {
+                        this.isSwiping = true;
+                        this.startX = e.touches ? e.touches[0].clientX : e.clientX;
+                    },
+                    onTouchMove(e) {
+                        if (!this.isSwiping) return;
+                        const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                        this.offsetX = currentX - this.startX;
+                    },
+                    onTouchEnd() {
+                        if (!this.isSwiping) return;
+                        this.isSwiping = false;
+                        if (Math.abs(this.offsetX) > 80) {
+                            this.dismiss();
+                        } else {
+                            this.offsetX = 0;
+                        }
+                    }
+                }"
+                x-show="show"
+                x-transition:leave="transition ease-out duration-300 transform"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
+                :style="isSwiping 
+                    ? 'transform: translateX(' + offsetX + 'px); opacity: ' + Math.max(0.2, 1 - Math.abs(offsetX)/250) + '; transition: none;' 
+                    : 'transform: translateX(' + offsetX + 'px); transition: transform 0.25s ease-out, opacity 0.25s ease-out;'"
+                @touchstart="onTouchStart($event)"
+                @touchmove="onTouchMove($event)"
+                @touchend="onTouchEnd()"
+                @mousedown="onTouchStart($event)"
+                @mousemove="onTouchMove($event)"
+                @mouseup="onTouchEnd()"
+                @mouseleave="if(isSwiping) onTouchEnd()"
+                class="relative mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-harvest/40 text-amber-900 flex items-center justify-between gap-3 shadow-sm select-none cursor-grab active:cursor-grabbing overflow-hidden group touch-pan-y"
+                role="alert">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <span class="material-symbols-outlined text-amber-harvest text-xl shrink-0">warning</span>
+                    <div class="text-xs sm:text-sm font-semibold leading-relaxed">{{ session('warning') }}</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="hidden sm:inline-flex text-[10px] font-semibold text-amber-700/70 bg-amber-100/70 px-2 py-0.5 rounded-full items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">swipe</span> Geser / 30s
+                    </span>
+                    <button type="button" @click="dismiss()" class="text-amber-700/60 hover:text-amber-900 transition p-1 rounded-lg hover:bg-amber-100">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
+                <div class="absolute bottom-0 left-0 h-0.5 bg-amber-500/40 rounded-full" style="animation: alertCountdown 30s linear forwards;"></div>
             </div>
         @endif
     </div>

@@ -202,6 +202,12 @@ class PengajuanBantuan extends Model
         return $this->hasMany(RiwayatStatusPengajuan::class, 'pengajuan_bantuan_id')->latest('waktu_perubahan');
     }
 
+    // Relasi ke tabel ke-10: Ulasan Layanan & IKM
+    public function ulasan(): HasOne
+    {
+        return $this->hasOne(UlasanLayanan::class, 'pengajuan_bantuan_id');
+    }
+
     /**
      * Booted: Otomatis mencatat riwayat perubahan status (Audit Trail)
      * tanpa perlu memodifikasi satupun Controller atau View.

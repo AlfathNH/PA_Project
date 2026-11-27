@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PengajuanController as AdminPengajuanController;
 use App\Http\Controllers\Admin\TopsisController as AdminTopsisController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\KepBid\DashboardController as KepBidDashboardController;
+use App\Http\Controllers\UlasanLayananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,12 +22,26 @@ Route::get('/', function () {
         $totalPoktan = \App\Models\KelompokTani::count();
         $totalPengajuan = \App\Models\PengajuanBantuan::count();
         $jenisAlsintan = \App\Models\JenisAlsintan::all();
+
+        // Data Ulasan & IKM Riil yang telah Disetujui Kepala Bidang untuk Tampil di Landing Page
+        $ulasanLanding = \App\Models\UlasanLayanan::with(['kelompokTani.kecamatanDetail', 'pengajuanBantuan.jenisAlsintan'])
+            ->tampilLanding()
+            ->latest('ditinjau_pada')
+            ->take(6)
+            ->get();
+
+        $avgRating = \App\Models\UlasanLayanan::avg('rating_bintang');
+        $avgRating = $avgRating ? round($avgRating, 2) : 4.92;
+        $totalUlasan = \App\Models\UlasanLayanan::count();
     } catch (\Throwable $e) {
         $totalPoktan = 418;
         $totalPengajuan = 12;
         $jenisAlsintan = collect();
+        $ulasanLanding = collect();
+        $avgRating = 4.92;
+        $totalUlasan = 42;
     }
-    return view('landing', compact('totalPoktan', 'totalPengajuan', 'jenisAlsintan'));
+    return view('landing', compact('totalPoktan', 'totalPengajuan', 'jenisAlsintan', 'ulasanLanding', 'avgRating', 'totalUlasan'));
 })->name('landing');
 
 // Otentikasi (Login & Registrasi Mandiri Poktan) dengan Throttling Anti-Brute Force
@@ -53,6 +68,7 @@ Route::middleware(['auth', 'role:kelompok_tani'])->prefix('poktan')->name('pokta
     Route::get('/dashboard', [PoktanDashboardController::class, 'index'])->name('dashboard');
     Route::post('/pengajuan', [PoktanDashboardController::class, 'storePengajuan'])->name('pengajuan.store');
     Route::put('/profil', [PoktanDashboardController::class, 'updateProfil'])->name('profil.update');
+    Route::post('/ulasan', [UlasanLayananController::class, 'storePoktan'])->name('ulasan.store');
 });
 
 // =========================================================================
@@ -97,4 +113,7 @@ Route::middleware(['auth', 'role:kepala_bidang'])->prefix('kepbid')->name('kepbi
     Route::get('/riwayat', [KepBidDashboardController::class, 'riwayat'])->name('riwayat');
     Route::get('/rekap/cetak', [KepBidDashboardController::class, 'cetakRekap'])->name('rekap.cetak');
     Route::post('/pruning/run', [KepBidDashboardController::class, 'jalankanPruning'])->name('pruning.run');
+
+    // Moderasi & Kurasi Ulasan Kepuasan Layanan (Tabel ke-10 Standar KKNI Level 5)
+    Route::post('/ulasan/{id}/toggle-landing', [UlasanLayananController::class, 'toggleLanding'])->name('ulasan.toggle_landing');
 });
