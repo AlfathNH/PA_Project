@@ -202,6 +202,11 @@
                                 <span class="material-symbols-outlined text-sm">inventory_2</span>
                                 <span>Riwayat & Rekap</span>
                             </a>
+                            <a href="{{ route('kepbid.ulasan') }}" 
+                               class="px-3.5 py-2 rounded-full text-xs font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap {{ request()->routeIs('kepbid.ulasan') ? 'bg-lime-harvest text-obsidian shadow-sm' : 'bg-white/10 hover:bg-white/20 text-white' }}">
+                                <span class="material-symbols-outlined text-sm">hotel_class</span>
+                                <span>Survei IKM &amp; Ulasan</span>
+                            </a>
                         @else
                             <a href="{{ route('poktan.dashboard') }}" 
                                class="px-3.5 py-2 rounded-full text-xs font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap {{ request()->routeIs('poktan.dashboard') ? 'bg-lime-harvest text-obsidian shadow-sm' : 'bg-white/10 hover:bg-white/20 text-white' }}">
@@ -298,6 +303,11 @@
                        class="group relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-harvest {{ request()->routeIs('kepbid.riwayat') ? 'bg-lime-harvest text-obsidian shadow-md' : 'text-celery-cream hover:bg-white/15 hover:text-white' }}">
                         <span class="material-symbols-outlined text-[20px]">inventory_2</span>
                         <span class="pointer-events-none opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 rounded-lg bg-obsidian text-white text-[11px] font-bold whitespace-nowrap shadow-lg">Riwayat &amp; Rekap</span>
+                    </a>
+                    <a href="{{ route('kepbid.ulasan') }}" aria-label="Survei IKM & Ulasan"
+                       class="group relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-harvest {{ request()->routeIs('kepbid.ulasan') ? 'bg-lime-harvest text-obsidian shadow-md' : 'text-celery-cream hover:bg-white/15 hover:text-white' }}">
+                        <span class="material-symbols-outlined text-[20px]">hotel_class</span>
+                        <span class="pointer-events-none opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 rounded-lg bg-obsidian text-white text-[11px] font-bold whitespace-nowrap shadow-lg">Survei IKM &amp; Ulasan</span>
                     </a>
                 @else
                     <a href="{{ route('poktan.dashboard') }}#poktan-status-section"
@@ -671,9 +681,9 @@
                 </nav>
             </div>
         @elseif(Auth::user()->isKepBid())
-            <!-- FLOATING MOBILE BOTTOM NAVIGATION BAR: KEPALA BIDANG (Compact 2 Menu Desktop: Keputusan & Riwayat) -->
+            <!-- FLOATING MOBILE BOTTOM NAVIGATION BAR: KEPALA BIDANG (Compact 3 Menu: Keputusan, Riwayat, & IKM) -->
             <div class="lg:hidden fixed bottom-3 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
-                <nav class="pointer-events-auto bg-forest-dark/95 backdrop-blur-md text-white rounded-full px-3 py-1.5 shadow-2xl border-2 border-forest-deep flex items-center justify-around w-full max-w-[200px] transition-all" aria-label="Navigasi Mobile Kepala Bidang">
+                <nav class="pointer-events-auto bg-forest-dark/95 backdrop-blur-md text-white rounded-full px-3 py-1.5 shadow-2xl border-2 border-forest-deep flex items-center justify-around w-full max-w-[280px] transition-all" aria-label="Navigasi Mobile Kepala Bidang">
                     <a href="{{ route('kepbid.dashboard') }}" class="relative flex-1 flex flex-col items-center justify-center min-w-[44px] min-h-[44px] py-0.5 rounded-full transition-all">
                         <div class="{{ request()->routeIs('kepbid.dashboard') ? 'bg-lime-harvest text-obsidian shadow-lg -translate-y-2 scale-105 ring-[3px] ring-forest-dark' : 'text-celery-cream/75 hover:text-white' }} w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ease-out">
                             <span class="material-symbols-outlined text-[19px] font-bold">approval</span>
@@ -686,6 +696,13 @@
                             <span class="material-symbols-outlined text-[19px] font-bold">inventory_2</span>
                         </div>
                         <span class="{{ request()->routeIs('kepbid.riwayat') ? 'text-lime-harvest font-black' : 'text-celery-cream/70 font-semibold' }} text-[10px] leading-tight tracking-tight block mt-0.5">Riwayat</span>
+                    </a>
+
+                    <a href="{{ route('kepbid.ulasan') }}" class="relative flex-1 flex flex-col items-center justify-center min-w-[44px] min-h-[44px] py-0.5 rounded-full transition-all">
+                        <div class="{{ request()->routeIs('kepbid.ulasan') ? 'bg-lime-harvest text-obsidian shadow-lg -translate-y-2 scale-105 ring-[3px] ring-forest-dark' : 'text-celery-cream/75 hover:text-white' }} w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ease-out">
+                            <span class="material-symbols-outlined text-[19px] font-bold">hotel_class</span>
+                        </div>
+                        <span class="{{ request()->routeIs('kepbid.ulasan') ? 'text-lime-harvest font-black' : 'text-celery-cream/70 font-semibold' }} text-[10px] leading-tight tracking-tight block mt-0.5">IKM</span>
                     </a>
                 </nav>
             </div>

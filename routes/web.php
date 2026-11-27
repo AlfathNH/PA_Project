@@ -23,11 +23,11 @@ Route::get('/', function () {
         $totalPengajuan = \App\Models\PengajuanBantuan::count();
         $jenisAlsintan = \App\Models\JenisAlsintan::all();
 
-        // Data Ulasan & IKM Riil yang telah Disetujui Kepala Bidang untuk Tampil di Landing Page
+        // Data Ulasan & IKM Riil yang telah Disetujui Kepala Bidang (Maksimal 3 Ulasan Ditampilkan di Beranda)
         $ulasanLanding = \App\Models\UlasanLayanan::with(['kelompokTani.kecamatanDetail', 'pengajuanBantuan.jenisAlsintan'])
             ->tampilLanding()
             ->latest('ditinjau_pada')
-            ->take(6)
+            ->take(3)
             ->get();
 
         $avgRating = \App\Models\UlasanLayanan::avg('rating_bintang');
@@ -114,6 +114,7 @@ Route::middleware(['auth', 'role:kepala_bidang'])->prefix('kepbid')->name('kepbi
     Route::get('/rekap/cetak', [KepBidDashboardController::class, 'cetakRekap'])->name('rekap.cetak');
     Route::post('/pruning/run', [KepBidDashboardController::class, 'jalankanPruning'])->name('pruning.run');
 
-    // Moderasi & Kurasi Ulasan Kepuasan Layanan (Tabel ke-10 Standar KKNI Level 5)
+    // Halaman Khusus & Moderasi Ulasan Kepuasan Layanan (Tabel ke-10 Standar KKNI Level 5)
+    Route::get('/ulasan', [KepBidDashboardController::class, 'ulasan'])->name('ulasan');
     Route::post('/ulasan/{id}/toggle-landing', [UlasanLayananController::class, 'toggleLanding'])->name('ulasan.toggle_landing');
 });

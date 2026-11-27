@@ -81,4 +81,9 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_KEPBID;
     }
+
+    public function isKepalaBidang(): bool
+    {
+        return $this->isKepBid();
+    }
 }

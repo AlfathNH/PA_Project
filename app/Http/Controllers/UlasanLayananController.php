@@ -51,7 +51,7 @@ class UlasanLayananController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->isKepalaBidang()) {
+        if (!$user || !$user->isKepBid()) {
             abort(403, 'Hanya Kepala Bidang yang berwenang memoderasi ulasan kepuasan layanan.');
         }
 

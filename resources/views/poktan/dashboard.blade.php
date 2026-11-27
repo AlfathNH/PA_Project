@@ -401,17 +401,6 @@
                                @change="onFileChange($event)"
                                class="w-full px-3.5 py-2.5 bg-bone-canvas/70 border-2 border-bone-slate rounded-2xl text-xs font-bold text-obsidian file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-forest-dark file:text-lime-harvest hover:file:bg-forest-accent cursor-pointer transition focus:ring-2 focus:ring-forest-dark focus:bg-white @error('berkas_proposal') border-red-500 @enderror">
                     </div>
-                    <!-- Info File Terpilih & Tombol Hapus Cepat -->
-                    <div x-cloak x-show="hasFile" class="mt-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2 text-xs text-forest-dark font-medium">
-                        <div class="flex items-center gap-2 truncate">
-                            <span class="material-symbols-outlined text-red-600 text-base">picture_as_pdf</span>
-                            <span class="truncate font-bold" x-text="fileName"></span>
-                        </div>
-                        <button type="button" @click="resetFile()" class="text-xs font-bold text-red-700 hover:text-red-900 hover:underline shrink-0 flex items-center gap-0.5">
-                            <span class="material-symbols-outlined text-xs">delete</span>
-                            <span>Hapus</span>
-                        </button>
-                    </div>
                     <p class="text-[10px] text-muted-green mt-1 flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs text-forest-dark">lock</span>
                         Standar Keamanan: Dokumen tersimpan di brankas digital privat (enkripsi UUID), maksimal 5 MB.

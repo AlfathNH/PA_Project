@@ -303,4 +303,24 @@ class DashboardController extends Controller
 
         return back()->with('success', "Proses Auto-Pruning Berhasil: {$kandidatCount} berkas usulan yang masa retensinya telah habis berhasil dibersihkan dari penyimpanan fisik. Data rekapitulasi teks dan hasil pemeringkatan TOPSIS tetap tersimpan aman di database untuk keperluan audit BPKP/ANRI.");
     }
+
+    /**
+     * Halaman Khusus: Survei Kepuasan Masyarakat (IKM) & Kurasi Ulasan Beranda
+     */
+    public function ulasan(Request $request)
+    {
+        $ulasanList = \App\Models\UlasanLayanan::with(['kelompokTani.kecamatanDetail', 'pengajuanBantuan.jenisAlsintan', 'reviewer'])
+            ->latest()
+            ->paginate(15, ['*'], 'ulasan_page')
+            ->withQueryString();
+
+        $statsUlasan = [
+            'total'          => \App\Models\UlasanLayanan::count(),
+            'avg'            => round(\App\Models\UlasanLayanan::avg('rating_bintang') ?: 0, 2),
+            'tampil_landing' => \App\Models\UlasanLayanan::where('is_tampil_landing', true)->count(),
+            'pending'        => \App\Models\UlasanLayanan::where('is_tampil_landing', false)->count(),
+        ];
+
+        return view('kepbid.ulasan', compact('ulasanList', 'statsUlasan'));
+    }
 }
