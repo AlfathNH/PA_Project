@@ -71,19 +71,6 @@ class DashboardController extends Controller
             ->paginate(50, ['*'], 'riwayat_page')
             ->withQueryString();
 
-        // Data Ulasan & Survei Kepuasan Layanan (Tabel ke-10 KKNI Level 5)
-        $ulasanList = \App\Models\UlasanLayanan::with(['kelompokTani.kecamatanDetail', 'pengajuanBantuan.jenisAlsintan', 'reviewer'])
-            ->latest()
-            ->paginate(15, ['*'], 'ulasan_page')
-            ->withQueryString();
-
-        $statsUlasan = [
-            'total'          => \App\Models\UlasanLayanan::count(),
-            'avg'            => round(\App\Models\UlasanLayanan::avg('rating_bintang') ?: 0, 2),
-            'tampil_landing' => \App\Models\UlasanLayanan::where('is_tampil_landing', true)->count(),
-            'pending'        => \App\Models\UlasanLayanan::where('is_tampil_landing', false)->count(),
-        ];
-
         return view('kepbid.dashboard', compact(
             'jenisAlsintans', 
             'selectedId', 
@@ -91,9 +78,7 @@ class DashboardController extends Controller
             'antrean', 
             'riwayat', 
             'stats', 
-            'tab',
-            'ulasanList',
-            'statsUlasan'
+            'tab'
         ));
     }
 

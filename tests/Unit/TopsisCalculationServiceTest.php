@@ -483,7 +483,7 @@ class TopsisCalculationServiceTest extends TestCase
         $this->service->hitung($this->alsintan->id, $this->admin->id);
     }
 
-    public function test_melempar_exception_jika_alternatif_kurang_dari_dua(): void
+    public function test_calon_tunggal_otomatis_ranking_satu_dengan_preferensi_penuh(): void
     {
         $c1 = Kriteria::create([
             'kode_kriteria' => 'C1',
@@ -494,11 +494,30 @@ class TopsisCalculationServiceTest extends TestCase
             'is_active'     => true,
         ]);
 
-        // Hanya 1 alternatif valid yang dinilai
-        $this->buatPengajuanDenganNilai('ONLY-ONE', [$c1->id => 35.0]);
+        // Hanya 1 alternatif valid yang dinilai (Aturan Adaptif Calon Tunggal)
+        $p1 = $this->buatPengajuanDenganNilai('ONLY-ONE', [$c1->id => 35.0]);
+
+        $hasil = $this->service->hitung($this->alsintan->id, $this->admin->id);
+
+        $this->assertCount(1, $hasil['ranking']);
+        $this->assertSame($p1->id, $hasil['ranking'][0]['pengajuan_id']);
+        $this->assertSame(1, $hasil['ranking'][0]['ranking']);
+        $this->assertEqualsWithDelta(1.0, $hasil['ranking'][0]['nilai_preferensi'], 1e-6);
+    }
+
+    public function test_melempar_exception_jika_alternatif_kosong(): void
+    {
+        Kriteria::create([
+            'kode_kriteria' => 'C1',
+            'nama_kriteria' => 'Luas Lahan',
+            'bobot'         => 1.00,
+            'tipe'          => 'benefit',
+            'urutan'        => 1,
+            'is_active'     => true,
+        ]);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Minimal 2 alternatif');
+        $this->expectExceptionMessage('Belum ada alternatif (Kelompok Tani) yang siap dinilai');
 
         $this->service->hitung($this->alsintan->id, $this->admin->id);
     }

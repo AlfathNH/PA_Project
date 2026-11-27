@@ -38,8 +38,9 @@ pa-spk-alsintan/
 │   │   │   ├── KepBid/
 │   │   │   │   └── DashboardController.php        # Persetujuan (ACC), penolakan, cetak rekapitulasi, dan retensi
 │   │   │   ├── Poktan/
-│   │   │   │   └── DashboardController.php        # Pengajuan alat, unggah PDF, kelola profil poktan, pantau status
-│   │   │   └── Controller.php                     # Base Controller induk Laravel
+│   │   │   │   └── DashboardController.php        # Pengajuan alat, unggah/reset PDF, kelola profil 30 kec, pantau status
+│   │   │   ├── Controller.php                     # Base Controller induk Laravel
+│   │   │   └── UlasanLayananController.php        # Simpan survei IKM poktan (opsional) & moderasi kurasi KepBid
 │   │   └── Middleware/
 │   │       ├── RoleMiddleware.php                 # Proteksi akses rute berdasarkan peran pengguna
 │   │       └── SecurityHeadersMiddleware.php      # Hardening HTTP Headers (Anti-Clickjacking, XSS, MIME Sniffing)
@@ -54,6 +55,7 @@ pa-spk-alsintan/
 │   │   ├── PenilaianTopsis.php                    # Nilai x_ij matriks keputusan per pengajuan per kriteria
 │   │   ├── PeriodeBantuan.php                     # Master periode tahun anggaran dan kuota alokasi dinas
 │   │   ├── RiwayatStatusPengajuan.php             # Audit trail kronologis perubahan status usulan (Observer)
+│   │   ├── UlasanLayanan.php                      # Entitas Tabel ke-10: Rating & ulasan kepuasan (IKM) terkurasi
 │   │   └── User.php                               # Data akun login, peran otoritas, status aktif, dan relasi poktan
 │   ├── Policies/
 │   │   └── PengajuanBantuanPolicy.php             # Otorisasi anti-IDOR untuk akses berkas dan data usulan
@@ -70,7 +72,7 @@ pa-spk-alsintan/
 │   └── filesystems.php                            # Konfigurasi Private Storage Driver (storage/app/private)
 ├── database/
 │   ├── factories/                                 # Factory data pengujian otomatis
-│   ├── migrations/                                # 14 berkas migrasi skema tabel basis data relasional
+│   ├── migrations/                                # 15 berkas migrasi skema 10 tabel basis data relasional (+ penunjang)
 │   └── seeders/
 │       ├── DatabaseSeeder.php                     # Master seeder orkestrasi pemanggilan seluruh seeder
 │       ├── JenisAlsintanSeeder.php                # Data awal mesin alsintan (Traktor, Pompa Air, Combine Harvester)
@@ -111,9 +113,10 @@ pa-spk-alsintan/
 │       ├── kepbid/
 │       │   ├── dashboard.blade.php                # Dashboard Kepala Bidang (Antrean Keputusan ACC/Tolak)
 │       │   ├── rekap_cetak.blade.php              # Template cetak laporan resmi penetapan penerima bantuan
-│       │   └── riwayat.blade.php                  # Arsip riwayat usulan yang telah diputuskan pimpinan
+│       │   ├── riwayat.blade.php                  # Arsip riwayat usulan yang telah diputuskan pimpinan
+│       │   └── ulasan.blade.php                   # Halaman khusus Survei Kepuasan (IKM) & Kurasi Ulasan Beranda
 │       ├── layouts/
-│       │   └── app.blade.php                      # Kerangka induk layout, navigasi desktop, mobile pill bar, loader
+│       │   └── app.blade.php                      # Kerangka induk layout, floating pill bar, swipe toast 30s, loader
 │       ├── poktan/
 │       │   └── dashboard.blade.php                # Portal Poktan (Profil hamparan, form permohonan, status alat)
 │       ├── vendor/
@@ -132,10 +135,11 @@ pa-spk-alsintan/
 ├── tests/
 │   ├── Feature/
 │   │   ├── AutoPruning90HariTest.php              # Pengujian otomatis fitur retensi dan pembersihan berkas fisik
-│   │   └── ExampleTest.php                        # Uji integrasi dasar HTTP
+│   │   ├── ExampleTest.php                        # Uji integrasi dasar HTTP
+│   │   └── UlasanLayananTest.php                  # Uji alur survei IKM poktan, moderasi KepBid, & batas 3 beranda
 │   ├── Unit/
 │   │   ├── ExampleTest.php                        # Uji unit dasar
-│   │   └── TopsisCalculationServiceTest.php       # Uji matematis 6 langkah algoritma TOPSIS vs perhitungan Excel
+│   │   └── TopsisCalculationServiceTest.php       # Uji matematis TOPSIS (6 langkah + aturan adaptif calon tunggal m=1)
 │   └── TestCase.php                               # Kelas dasar pengujian Laravel
 ├── .env.example                                   # Contoh konfigurasi variabel lingkungan sistem
 ├── composer.json                                  # Manajemen dependensi pustaka PHP

@@ -233,10 +233,10 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-bone-slate pb-4 gap-3">
             <div class="flex flex-wrap sm:flex-nowrap gap-2">
                 <a href="{{ route('kepbid.dashboard', ['jenis_id' => $selectedId, 'tab' => 'antrean']) }}" 
-                   class="px-3.5 sm:px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 sm:space-x-2 {{ $tab === 'antrean' || ($tab !== 'riwayat' && $tab !== 'ulasan') ? 'bg-forest-dark text-white shadow-sm' : 'bg-bone-canvas text-forest-dark hover:bg-bone-slate' }}">
+                   class="px-3.5 sm:px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 sm:space-x-2 {{ $tab !== 'riwayat' ? 'bg-forest-dark text-white shadow-sm' : 'bg-bone-canvas text-forest-dark hover:bg-bone-slate' }}">
                     <span class="material-symbols-outlined text-base">inbox</span>
                     <span>Antrean <span class="hidden sm:inline">Menunggu Keputusan</span></span>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $tab === 'antrean' || ($tab !== 'riwayat' && $tab !== 'ulasan') ? 'bg-lime-harvest text-obsidian' : 'bg-bone-slate text-forest-dark' }}">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $tab !== 'riwayat' ? 'bg-lime-harvest text-obsidian' : 'bg-bone-slate text-forest-dark' }}">
                         {{ $stats['menunggu_acc'] }}
                     </span>
                 </a>
@@ -247,15 +247,6 @@
                     <span>Riwayat <span class="hidden sm:inline">Keputusan Selesai</span></span>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $tab === 'riwayat' ? 'bg-lime-harvest text-obsidian' : 'bg-bone-slate text-forest-dark' }}">
                         {{ $stats['disetujui'] + $stats['ditolak'] }}
-                    </span>
-                </a>
-
-                <a href="{{ route('kepbid.dashboard', ['jenis_id' => $selectedId, 'tab' => 'ulasan']) }}" 
-                   class="px-3.5 sm:px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 sm:space-x-2 {{ $tab === 'ulasan' ? 'bg-forest-dark text-white shadow-sm' : 'bg-bone-canvas text-forest-dark hover:bg-bone-slate' }}">
-                    <span class="material-symbols-outlined text-base">hotel_class</span>
-                    <span>Survei IKM <span class="hidden sm:inline">&amp; Ulasan</span></span>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $tab === 'ulasan' ? 'bg-lime-harvest text-obsidian' : 'bg-bone-slate text-forest-dark' }}">
-                        {{ $statsUlasan['total'] }}
                     </span>
                 </a>
             </div>
@@ -270,7 +261,7 @@
         {{-- ========================================================================= --}}
         {{-- TAB 1: ANTREAN MENUNGGU KEPUTUSAN (Hanya yang berstatus 'dirangking')     --}}
         {{-- ========================================================================= --}}
-        @if($tab === 'antrean' || ($tab !== 'riwayat' && $tab !== 'ulasan'))
+        @if($tab !== 'riwayat')
             <div>
                 <div class="mb-4">
                     <h2 class="font-extrabold text-obsidian text-sm uppercase tracking-wider flex items-center font-urbanist">
@@ -513,7 +504,7 @@
         {{-- ========================================================================= --}}
         {{-- TAB 2: RIWAYAT KEPUTUSAN (Telah di-ACC atau Ditolak)                      --}}
         {{-- ========================================================================= --}}
-        @elseif($tab === 'riwayat')
+        @else
             <div>
                 <div class="mb-4">
                     <h2 class="font-extrabold text-obsidian text-sm uppercase tracking-wider flex items-center font-urbanist">
@@ -654,180 +645,6 @@
                     @if($riwayat->hasPages())
                         <div class="mt-4 px-3 sm:px-6 py-3 border-t border-bone-slate bg-white rounded-2xl w-full min-w-0 overflow-hidden shadow-2xs">
                             {{ $riwayat->links('vendor.pagination.custom-tailwind') }}
-                        </div>
-                    @endif
-                @endif
-            </div>
-
-        {{-- ========================================================================= --}}
-        {{-- TAB 3: SURVEI KEPUASAN MASYARAKAT (IKM) & KURASI ULASAN BERANDA          --}}
-        {{-- ========================================================================= --}}
-        @else
-            <div class="space-y-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="font-extrabold text-obsidian text-sm sm:text-base uppercase tracking-wider flex items-center font-urbanist">
-                            <span class="material-symbols-outlined text-forest-dark mr-1.5">hotel_class</span>
-                            Survei Kepuasan Masyarakat (IKM) &amp; Kurasi Ulasan Beranda
-                        </h2>
-                        <p class="text-xs text-muted-green mt-0.5">
-                            Pantau tingkat kepuasan Kelompok Tani secara transparan dan tentukan ulasan yang disetujui untuk ditampilkan pada Landing Page publik.
-                        </p>
-                    </div>
-
-                    <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3.5 py-1.5 rounded-2xl shrink-0">
-                        <span class="material-symbols-outlined text-emerald-700 text-lg">verified</span>
-                        <span class="text-xs font-bold text-emerald-900">Permenpan-RB No. 14 / 2017</span>
-                    </div>
-                </div>
-
-                <!-- 4 Statistik Ringkas IKM -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    <div class="bg-bone-canvas/70 rounded-2xl p-4 border border-bone-slate">
-                        <span class="text-[11px] font-bold text-muted-green uppercase tracking-wider block">Indeks Kepuasan (IKM)</span>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl sm:text-3xl font-black text-forest-dark font-urbanist tabular-nums">{{ number_format($statsUlasan['avg'], 2) }}</span>
-                            <span class="text-xs text-muted-green font-bold">/ 5.0</span>
-                        </div>
-                        <div class="flex items-center gap-0.5 text-amber-500 mt-1">
-                            @for($i = 1; $i <= 5; $i++)
-                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' {{ $i <= round($statsUlasan['avg']) ? 1 : 0 }};">star</span>
-                            @endfor
-                        </div>
-                    </div>
-
-                    <div class="bg-bone-canvas/70 rounded-2xl p-4 border border-bone-slate">
-                        <span class="text-[11px] font-bold text-muted-green uppercase tracking-wider block">Total Responden Poktan</span>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl sm:text-3xl font-black text-obsidian font-urbanist tabular-nums">{{ $statsUlasan['total'] }}</span>
-                            <span class="text-xs text-muted-green font-bold">Poktan</span>
-                        </div>
-                        <span class="text-[10px] text-muted-green mt-1 block">Survei bersifat sukarela/opsional</span>
-                    </div>
-
-                    <div class="bg-bone-canvas/70 rounded-2xl p-4 border border-bone-slate">
-                        <span class="text-[11px] font-bold text-muted-green uppercase tracking-wider block">Tayang di Beranda Publik</span>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl sm:text-3xl font-black text-emerald-700 font-urbanist tabular-nums">{{ $statsUlasan['tampil_landing'] }}</span>
-                            <span class="text-xs text-muted-green font-bold">Ulasan Disetujui</span>
-                        </div>
-                        <span class="text-[10px] text-emerald-700 font-medium mt-1 block">Telah dikurasi oleh Kepala Bidang</span>
-                    </div>
-
-                    <div class="bg-bone-canvas/70 rounded-2xl p-4 border border-bone-slate">
-                        <span class="text-[11px] font-bold text-muted-green uppercase tracking-wider block">Menunggu / Internal Saja</span>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span class="text-2xl sm:text-3xl font-black text-amber-700 font-urbanist tabular-nums">{{ $statsUlasan['pending'] }}</span>
-                            <span class="text-xs text-muted-green font-bold">Ulasan</span>
-                        </div>
-                        <span class="text-[10px] text-muted-green mt-1 block">Tersimpan untuk arsip dinas</span>
-                    </div>
-                </div>
-
-                <!-- Tabel Kurasi Ulasan -->
-                @if($ulasanList->isEmpty())
-                    <div class="py-16 text-center text-muted-green space-y-2 bg-bone-canvas/40 rounded-3xl border border-dashed border-bone-slate">
-                        <span class="material-symbols-outlined text-4xl text-bone-slate">rate_review</span>
-                        <p class="text-sm font-bold text-obsidian">Belum ada ulasan atau survei kepuasan yang dikirimkan oleh Kelompok Tani.</p>
-                        <p class="text-xs text-muted-green">Ulasan akan muncul otomatis setelah poktan mengisi survei kepuasan di dashboard mereka.</p>
-                    </div>
-                @else
-                    <div class="overflow-x-auto rounded-2xl border border-bone-slate">
-                        <table class="w-full text-left text-xs text-obsidian">
-                            <thead class="bg-bone-canvas/90 text-forest-dark uppercase tracking-wider text-[11px] font-black border-b border-bone-slate">
-                                <tr>
-                                    <th class="py-3.5 px-4">Kelompok Tani (Responden)</th>
-                                    <th class="py-3.5 px-4 text-center">Rating</th>
-                                    <th class="py-3.5 px-4">Ulasan / Masukan</th>
-                                    <th class="py-3.5 px-4">Usulan Terkait</th>
-                                    <th class="py-3.5 px-4 text-center">Status Beranda</th>
-                                    <th class="py-3.5 px-4 text-right">Aksi Kurasi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-bone-slate/60 bg-white">
-                                @foreach($ulasanList as $u)
-                                    <tr class="hover:bg-bone-canvas/40 transition">
-                                        <td class="py-3 px-4">
-                                            <div class="font-extrabold text-forest-dark text-xs sm:text-sm">
-                                                {{ $u->kelompokTani?->nama_poktan ?? 'Kelompok Tani' }}
-                                            </div>
-                                            <div class="text-[11px] text-muted-green">
-                                                Kec. {{ $u->kelompokTani?->kecamatan ?? '-' }}, Desa {{ $u->kelompokTani?->desa ?? '-' }}
-                                            </div>
-                                            <div class="text-[10px] text-muted-green/80 mt-0.5">
-                                                Ketua: {{ $u->kelompokTani?->nama_ketua ?? '-' }}
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-4 text-center shrink-0">
-                                            <div class="inline-flex items-center gap-0.5 text-amber-500 font-bold">
-                                                @for($s = 1; $s <= 5; $s++)
-                                                    <span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' {{ $s <= $u->rating_bintang ? 1 : 0 }};">star</span>
-                                                @endfor
-                                            </div>
-                                            <div class="text-[10px] font-bold text-obsidian tabular-nums mt-0.5">
-                                                {{ $u->rating_bintang }} / 5
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-4 max-w-xs sm:max-w-md">
-                                            @if($u->komentar)
-                                                <p class="text-xs text-obsidian italic leading-relaxed">
-                                                    &ldquo;{{ $u->komentar }}&rdquo;
-                                                </p>
-                                            @else
-                                                <span class="text-muted-green/60 italic text-[11px]">Hanya memberikan rating bintang</span>
-                                            @endif
-                                            <span class="text-[10px] text-muted-green block mt-1">
-                                                Dikirim pada: {{ $u->created_at->format('d/m/Y H:i') }} WIB
-                                            </span>
-                                        </td>
-                                        <td class="py-3 px-4 text-[11px]">
-                                            @if($u->pengajuanBantuan)
-                                                <div class="font-bold text-forest-dark">{{ $u->pengajuanBantuan->jenisAlsintan?->nama_alsintan ?? 'Mesin Alsintan' }}</div>
-                                                <div class="text-muted-green font-mono">{{ $u->pengajuanBantuan->nomor_pengajuan }}</div>
-                                            @else
-                                                <span class="text-muted-green">-</span>
-                                            @endif
-                                        </td>
-                                        <td class="py-3 px-4 text-center">
-                                            @if($u->is_tampil_landing)
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
-                                                    <span class="material-symbols-outlined text-xs">visibility</span>
-                                                    <span>Tampil di Beranda</span>
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">
-                                                    <span class="material-symbols-outlined text-xs">visibility_off</span>
-                                                    <span>Internal Saja</span>
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="py-3 px-4 text-right">
-                                            <form method="POST" action="{{ route('kepbid.ulasan.toggle_landing', $u->id) }}">
-                                                @csrf
-                                                @if($u->is_tampil_landing)
-                                                    <button type="submit" 
-                                                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition shadow-2xs">
-                                                        <span class="material-symbols-outlined text-xs">hide_source</span>
-                                                        <span>Sembunyikan</span>
-                                                    </button>
-                                                @else
-                                                    <button type="submit" 
-                                                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-forest-dark hover:bg-forest-hover text-lime-harvest transition shadow-2xs">
-                                                        <span class="material-symbols-outlined text-xs">publish</span>
-                                                        <span>Tampilkan di Beranda</span>
-                                                    </button>
-                                                @endif
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    @if($ulasanList->hasPages())
-                        <div class="mt-4 px-3 sm:px-6 py-3 border-t border-bone-slate bg-white rounded-2xl w-full min-w-0 overflow-hidden shadow-2xs">
-                            {{ $ulasanList->links('vendor.pagination.custom-tailwind') }}
                         </div>
                     @endif
                 @endif

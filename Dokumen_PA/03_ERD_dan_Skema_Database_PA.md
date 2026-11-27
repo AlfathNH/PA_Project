@@ -6,7 +6,7 @@
 
 ### 1. Deskripsi Perancangan Basis Data
 
-Perancangan basis data pada Sistem Pendukung Keputusan (SPK) Penyaluran Bantuan Alat dan Mesin Pertanian (Alsintan) dirancang dengan memenuhi kaidah normalisasi bentuk ketiga (*Third Normal Form / 3NF*). Basis data ini mengintegrasikan sembilan tabel relasional utama serta dua tabel master penunjang wilayah kedinasan guna menjamin integritas referensial data (*referential integrity*), mencegah anomali pembaruan, serta memisahkan dokumen fisik dari database melalui penyimpanan privat terenkripsi.
+Perancangan basis data pada Sistem Pendukung Keputusan (SPK) Penyaluran Bantuan Alat dan Mesin Pertanian (Alsintan) dirancang dengan memenuhi kaidah normalisasi bentuk ketiga (*Third Normal Form / 3NF*). Basis data ini mengintegrasikan **10 tabel relasional utama** (sesuai rentang 8 hingga 12 tabel pada standar **KKNI Level 5 Program D3 Sistem Informasi**) serta tabel penunjang guna menjamin integritas referensial data (*referential integrity*), mencegah anomali pembaruan, serta memisahkan dokumen fisik dari database melalui penyimpanan privat terenkripsi.
 
 ---
 
@@ -28,6 +28,10 @@ erDiagram
     PENGAJUAN_BANTUANS ||--o| HASIL_TOPSIS : "menghasilkan preferensi Vi (1:1)"
     
     KRITERIAS ||--o{ PENILAIAN_TOPSIS : "menjadi parameter evaluasi (1:N)"
+    
+    KELOMPOK_TANIS ||--o{ ULASAN_LAYANANS : "mengisi survei IKM (1:N)"
+    PENGAJUAN_BANTUANS ||--o| ULASAN_LAYANANS : "memiliki ulasan terkait (1:0..1)"
+    USERS ||--o{ ULASAN_LAYANANS : "mengkurasi ulasan beranda (1:N)"
 
     USERS {
         bigint id PK
@@ -159,6 +163,18 @@ erDiagram
         text keterangan
         timestamps created_at_updated_at
     }
+
+    ULASAN_LAYANANS {
+        bigint id PK
+        bigint kelompok_tani_id FK
+        bigint pengajuan_bantuan_id FK
+        tinyint rating_bintang "Skala 1 s.d. 5"
+        text komentar "Opsional"
+        boolean is_tampil_landing "Moderasi Kepala Bidang"
+        bigint ditinjau_oleh FK
+        timestamp ditinjau_pada
+        timestamps created_at_updated_at
+    }
 ```
 
 ---
@@ -178,6 +194,9 @@ erDiagram
 | 9 | `pengajuan_bantuans` | 1 : 1 | `hasil_topsis` | `hasil_topsis.pengajuan_bantuan_id` | `CASCADE` (Rekap ranking terhapus jika usulan dihapus) |
 | 10 | `pengajuan_bantuans` | 1 : N | `riwayat_status_pengajuans` | `riwayat_status_pengajuans.pengajuan_bantuan_id` | `CASCADE` (Audit log melekat pada entitas pengajuan) |
 | 11 | `users` | 1 : N | `riwayat_status_pengajuans` | `riwayat_status_pengajuans.user_id` | `SET NULL` (Jejak audit tetap abadi meski akun operator dinonaktifkan) |
+| 12 | `kelompok_tanis` | 1 : N | `ulasan_layanans` | `ulasan_layanans.kelompok_tani_id` | `CASCADE` (Data ulasan IKM ikut terhapus jika profil poktan dihapus) |
+| 13 | `pengajuan_bantuans` | 1 : 1 | `ulasan_layanans` | `ulasan_layanans.pengajuan_bantuan_id` | `SET NULL` (Penilaian IKM tetap tersimpan meski data usulan diarsipkan) |
+| 14 | `users` | 1 : N | `ulasan_layanans` | `ulasan_layanans.ditinjau_oleh` | `SET NULL` (Riwayat persetujuan tampil di beranda tetap tercatat) |
 
 ---
 
@@ -383,3 +402,21 @@ Menyimpan master gelombang pengajuan bantuan berdasarkan tahun anggaran penetapa
 | `keterangan` | TEXT | - | Ya | NULL | Keterangan dasar hukum penetapan anggaran dinas. |
 | `created_at` | TIMESTAMP | - | Ya | NULL | Waktu pencatatan periode bantuan. |
 | `updated_at` | TIMESTAMP | - | Ya | NULL | Waktu pembaruan informasi batas tanggal bantuan. |
+
+---
+
+#### L. Tabel `ulasan_layanans` *(Tabel ke-10 - Survei Kepuasan IKM)*
+Menyimpan rating kepuasan bintang 1 sampai 5 serta komentar masukan sukarela dari Kelompok Tani sesuai standar Indeks Kepuasan Masyarakat (Permenpan-RB No. 14/2017), dilengkapi kendali moderasi oleh Kepala Bidang sebelum ditayangkan pada halaman depan publik.
+
+| Nama Kolom | Tipe Data & Panjang | Kunci | Nullable | Bawaan | Deskripsi & Aturan Bisnis |
+|:---|:---|:---:|:---:|:---:|:---|
+| `id` | BIGINT UNSIGNED | PK | Tidak | Auto | Identifikator unik entri ulasan IKM. |
+| `kelompok_tani_id` | BIGINT UNSIGNED | FK | Tidak | - | Referensi relasi ke profil pemberi ulasan `kelompok_tanis.id`. |
+| `pengajuan_bantuan_id`| BIGINT UNSIGNED | FK | Ya | NULL | Referensi opsional ke transaksi usulan terkait `pengajuan_bantuans.id`. |
+| `rating_bintang` | TINYINT UNSIGNED | - | Tidak | - | Skor kepuasan skala Likert antara 1 hingga 5 bintang. |
+| `komentar` | TEXT | - | Ya | NULL | Pesan masukan atau testimoni tertulis (opsional, maksimal 1.000 karakter). |
+| `is_tampil_landing` | BOOLEAN | - | Tidak | `false` | Status kurasi beranda (`true` disetujui tampil oleh Kepala Bidang, `false` arsip internal). |
+| `ditinjau_oleh` | BIGINT UNSIGNED | FK | Ya | NULL | Referensi relasi ke akun Kepala Bidang peninjau (`users.id`). |
+| `ditinjau_pada` | TIMESTAMP | - | Ya | NULL | Waktu terakhir status penayangan ulasan di beranda dimoderasi. |
+| `created_at` | TIMESTAMP | - | Ya | NULL | Waktu pengiriman survei kepuasan oleh kelompok tani. |
+| `updated_at` | TIMESTAMP | - | Ya | NULL | Waktu pembaruan status moderasi ulasan. |

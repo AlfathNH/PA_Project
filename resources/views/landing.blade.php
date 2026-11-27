@@ -270,7 +270,8 @@
                             if (isset($ulasanLanding) && $ulasanLanding->isNotEmpty()) {
                                 foreach ($ulasanLanding as $ul) {
                                     $carouselItems[] = [
-                                        'nama' => ($ul->kelompokTani?->nama_ketua ? 'Bpk/Ibu ' . $ul->kelompokTani->nama_ketua . ' (' . ($ul->kelompokTani?->nama_poktan ?? 'Poktan') . ')' : ($ul->kelompokTani?->nama_poktan ?? 'Kelompok Tani')),
+                                        'label' => 'Ulasan Kepuasan Poktan Terkurasi',
+                                        'nama' => ($ul->kelompokTani?->nama_ketua ? $ul->kelompokTani->nama_ketua . ' (' . ($ul->kelompokTani?->nama_poktan ?? 'Poktan') . ')' : ($ul->kelompokTani?->nama_poktan ?? 'Kelompok Tani')),
                                         'skor' => 'Kepuasan: ' . $ul->rating_bintang . '/5 ★',
                                         'alat' => $ul->pengajuanBantuan?->jenisAlsintan?->nama_alsintan ?? 'Alsintan Terverifikasi',
                                         'quote' => $ul->komentar ?: 'Pelayanan bantuan alsintan Dinas Pertanian Kab. Subang berjalan profesional, adil, dan transparan.',
@@ -281,21 +282,24 @@
                             if (count($carouselItems) < 3) {
                                 $defaultItems = [
                                     [
-                                        'nama' => 'Bpk. Sutarman, Ketua Poktan Sri Rahayu (Pagaden)',
+                                        'label' => 'Profil Penerima Bantuan Terpilih TOPSIS',
+                                        'nama' => 'Sutarman (Poktan Sri Rahayu)',
                                         'skor' => 'Vi = 0,892 (Peringkat #1)',
                                         'alat' => 'Combine Harvester 2 Unit',
                                         'quote' => 'Transparansi perhitungan sistem TOPSIS ini menghilangkan keraguan kami. Nilai kedekatan solusi ideal dihitung murni dari luas hamparan sawah dan kesiapan operator poktan tanpa ada intervensi subjektif.',
                                         'wilayah' => 'Pagaden &bull; Pantura Subang'
                                     ],
                                     [
-                                        'nama' => 'H. Endang Sujana, Ketua Poktan Sri Mukti (Gunungsari)',
+                                        'label' => 'Profil Penerima Bantuan Terpilih TOPSIS',
+                                        'nama' => 'Endang Sujana (Poktan Sri Mukti)',
                                         'skor' => 'Vi = 0,812 (Peringkat #1)',
                                         'alat' => 'Traktor Roda 2 (Hand Tractor)',
                                         'quote' => 'Sebelumnya kami sering terlambat mengolah sawah seluas 38,5 Ha sebelum hujan. Dengan pemeringkatan ilmiah TOPSIS, bantuan traktor terbukti tepat sasaran kepada kelompok yang paling mendesak.',
                                         'wilayah' => 'Gunungsari &bull; Subang Tengah'
                                     ],
                                     [
-                                        'nama' => 'Bpk. Wawan Hermawan, Ketua Poktan Tunas Jaya (Ciasem)',
+                                        'label' => 'Profil Penerima Bantuan Terpilih TOPSIS',
+                                        'nama' => 'Wawan Hermawan (Poktan Tunas Jaya)',
                                         'skor' => 'Vi = 0,764 (Peringkat #2)',
                                         'alat' => 'Pompa Air Irigasi 3-4 Inch',
                                         'quote' => 'Saat musim kemarau di Pantura Subang, sistem ini adil memprioritaskan hamparan sawah tadah hujan kami. Kami kelompok tani juga bisa memantau tahapan persetujuan langsung lewat HP dengan tenang.',
@@ -337,11 +341,11 @@
                                 <div>
                                     <div class="text-[10px] uppercase tracking-wider text-amber-800 font-extrabold flex items-center gap-1.5">
                                         <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                                        Profil Penerima Bantuan Terpilih TOPSIS
+                                        <span x-text="testimonials[activeSlide].label || 'Profil Penerima Bantuan Terpilih TOPSIS'">Profil Penerima Bantuan Terpilih TOPSIS</span>
                                     </div>
                                     <h3 class="text-sm sm:text-base font-extrabold text-forest-dark font-urbanist mt-0.5"
                                         x-text="testimonials[activeSlide].nama">
-                                        Bpk. Sutarman, Ketua Poktan Sri Rahayu (Pagaden)
+                                        Sutarman (Poktan Sri Rahayu)
                                     </h3>
                                 </div>
                                 <div class="shrink-0 text-forest-dark bg-lime-harvest/50 border border-lime-harvest px-2.5 py-1 rounded-full text-[11px] font-black tabular-nums"

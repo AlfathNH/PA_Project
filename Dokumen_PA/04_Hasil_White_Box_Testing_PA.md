@@ -8,54 +8,66 @@
 
 Pengujian kotak putih (*White Box Testing*) dilakukan untuk menguji struktur logika internal, kebenaran algoritma matematis, penanganan kondisi batas (*boundary value*), percabangan kode (*branch coverage*), serta integritas transaksi basis data pada lapisan layanan (*Service Layer*) dan model aplikasi.
 
-Pengujian dieksekusi menggunakan kerangka kerja otomasi **PHPUnit 11** yang terintegrasi dengan pengujian Laravel. Pengujian berfokus pada dua modul paling krusial dalam sistem:
-1. **Mesin Kalkulasi SPK TOPSIS (`app/Services/TopsisCalculationService.php`)**: Memverifikasi presisi desimal 6 langkah matematis algoritma TOPSIS terhadap hasil perhitungan acuan Microsoft Excel pada Bab IV, pengujian kriteria campuran (*benefit* dan *cost*), penanganan kondisi ekstrem, serta proteksi pembagian dengan nol (*zero division guard*).
+Pengujian dieksekusi menggunakan kerangka kerja otomasi **PHPUnit 12.5.43** (PHP 8.5.1) yang terintegrasi dengan pengujian Laravel. Pengujian berfokus pada tiga modul utama dalam sistem:
+1. **Mesin Kalkulasi SPK TOPSIS (`app/Services/TopsisCalculationService.php`)**: Memverifikasi presisi desimal 6 langkah matematis algoritma TOPSIS terhadap hasil perhitungan acuan Microsoft Excel pada Bab IV, aturan adaptif calon tunggal ($m = 1$), pengujian kriteria campuran (*benefit* dan *cost*), penanganan kondisi ekstrem, serta proteksi pembagian dengan nol (*zero division guard*).
 2. **Manajemen Retensi dan Pembersihan Berkas Fisik (`app/Models/PengajuanBantuan.php` & `app/Console/Commands/PruneExpiredFilesCommand.php`)**: Memverifikasi logika otomatisasi pembersihan dokumen PDF kedaluwarsa sesuai regulasi retensi (90 hari untuk usulan ditolak dan 13 bulan untuk usulan disetujui guna audit BPKP), idempotensi pembersihan, serta pengujian mode simulasi (*dry-run*).
+3. **Modul Survei Kepuasan Masyarakat & Kurasi Beranda (`app/Http/Controllers/UlasanLayananController.php`)**: Memverifikasi isolasi status awal ulasan (`is_tampil_landing = false`), hak kurasi eksklusif Kepala Bidang, penolakan otomatis untuk peran lain, serta pembatasan maksimal 3 ulasan terkurasi pada halaman beranda publik.
 
 ---
 
 ### 2. Rekapitulasi Hasil Eksekusi Pengujian Otomatis
 
-Berdasarkan hasil eksekusi pengujian suite otomatis menggunakan perintah `php artisan test`, seluruh rangkaian pengujian berhasil diselesaikan dengan tingkat kelulusan sempurna:
+Berdasarkan hasil eksekusi pengujian suite otomatis menggunakan perintah `php artisan test --testdox`, seluruh rangkaian pengujian berhasil diselesaikan dengan tingkat kelulusan sempurna:
 
 ```text
-   PASS  Tests\Unit\ExampleTest
-   ✓ that true is true                                                              0.03s
+PHPUnit 12.5.43 by Sebastian Bergmann and contributors.
+Runtime: PHP 8.5.1
+Configuration: D:\Alfath Kuliah\PA\phpunit.xml
 
-   PASS  Tests\Unit\TopsisCalculationServiceTest
-   ✓ akurasi 6 langkah topsis sesuai dataset bab iv 4 poktan 5 kriteria             0.14s
-   ✓ akurasi analitik 6 langkah topsis kriteria benefit dan cost                    0.03s
-   ✓ solusi ideal ekstrem menghasilkan preferensi satu dan nol                      0.02s
-   ✓ guard pembagian nol saat kolom kriteria bernilai nol semua                     0.02s
-   ✓ guard pembagian nol saat semua alternatif bernilai identik                     0.02s
-   ✓ kriteria nonaktif diabaikan dan penilaian kosong default nol                   0.03s
-   ✓ pengajuan draft ditolak tanpa penilaian dan alsintan lain dikecualikan         0.04s
-   ✓ melempar exception jika tidak ada kriteria aktif                               0.02s
-   ✓ melempar exception jika alternatif kurang dari dua                             0.02s
-   ✓ hitung ulang memperbarui hasil tanpa duplikasi dan menghasilkan batch baru     0.05s
+Auto Pruning90Hari (Tests\Feature\AutoPruning90Hari)
+ ✔ Pengajuan baru otomatis mendapat masa retensi 90 hari
+ ✔ Berkas dalam masa retensi di bawah 90 hari tidak dipruning
+ ✔ Auto pruning menghapus berkas fisik setelah 90 hari dan menjaga metadata serta hasil topsis
+ ✔ Mode dry run tidak menghapus berkas fisik dan tidak mengubah files pruned at
+ ✔ Idempotensi pruning tidak memproses ulang usulan yang sudah dipruning
+ ✔ Keputusan kabid menetapkan retensi 90 hari untuk penolakan dan 13 bulan untuk persetujuan
+ ✔ Endpoint manual pruning kepala bidang dan proteksi rbac poktan
+ ✔ Scope prunable model memilih kandidat sesuai aturan bisnis
+ ✔ Pruning tetap sukses meski berkas fisik sudah tidak ada di disk
 
-   PASS  Tests\Feature\ExampleTest
-   ✓ the application returns a successful response                                  0.09s
+Example (Tests\Feature\Example)
+ ✔ The application returns a successful response
 
-   PASS  Tests\Feature\AutoPruning90HariTest
-   ✓ pengajuan baru otomatis mendapat masa retensi 90 hari                          0.08s
-   ✓ berkas dalam masa retensi di bawah 90 hari tidak dipruning                    0.05s
-   ✓ auto pruning menghapus berkas fisik setelah 90 hari dan menjaga metadata       0.06s
-   ✓ mode dry run tidak menghapus berkas fisik dan tidak mengubah files pruned at   0.04s
-   ✓ idempotensi pruning tidak memproses ulang usulan yang sudah dipruning          0.04s
-   ✓ keputusan kabid menetapkan retensi 90 hari penolakan dan 13 bulan persetujuan  0.06s
-   ✓ endpoint manual pruning kepala bidang dan proteksi rbac poktan                 0.05s
-   ✓ scope prunable model memilih kandidat sesuai aturan bisnis                     0.05s
-   ✓ pruning tetap sukses meski berkas fisik sudah tidak ada di disk                0.04s
+Example (Tests\Unit\Example)
+ ✔ That true is true
 
-  Tests:    21 passed (267 assertions)
-  Duration: 1.56s
+Topsis Calculation Service (Tests\Unit\TopsisCalculationService)
+ ✔ Akurasi 6 langkah topsis sesuai dataset bab iv 4 poktan 5 kriteria
+ ✔ Akurasi analitik 6 langkah topsis kriteria benefit dan cost
+ ✔ Solusi ideal ekstrem menghasilkan preferensi satu dan nol
+ ✔ Guard pembagian nol saat kolom kriteria bernilai nol semua
+ ✔ Guard pembagian nol saat semua alternatif bernilai identik
+ ✔ Kriteria nonaktif diabaikan dan penilaian kosong default nol
+ ✔ Pengajuan draft ditolak tanpa penilaian dan alsintan lain dikecualikan
+ ✔ Melempar exception jika tidak ada kriteria aktif
+ ✔ Calon tunggal otomatis ranking satu dengan preferensi penuh
+ ✔ Melempar exception jika alternatif kosong
+ ✔ Hitung ulang memperbarui hasil tanpa duplikasi dan menghasilkan batch baru
+
+Ulasan Layanan (Tests\Feature\UlasanLayanan)
+ ✔ Poktan dapat mengirim ulasan dan default tersembunyi
+ ✔ Kepala bidang dapat mengkurasi dan menyetujui ulasan ke beranda
+ ✔ Non kepala bidang ditolak saat mencoba moderasi ulasan
+ ✔ Landing page maksimal menampilkan tiga ulasan terkurasi
+
+OK (26 tests, 284 assertions)
+Time: 00:01.735, Memory: 60.00 MB
 ```
 
-* **Total Skenario Pengujian Unit & Fitur:** 21 Uji Kasus
-* **Total Pernyataan Verifikasi (*Assertions*):** 267 Assertions
+* **Total Skenario Pengujian Unit & Fitur:** 26 Uji Kasus
+* **Total Pernyataan Verifikasi (*Assertions*):** 284 Assertions
 * **Tingkat Keberhasilan:** 100% Lulus (*Zero Failure, Zero Error*)
-* **Waktu Eksekusi Komputasi:** 1,56 Detik
+* **Waktu Eksekusi Komputasi:** 1,735 Detik
 
 ---
 
@@ -80,9 +92,10 @@ Pengujian mencocokkan matriks keputusan asli dari 4 alternatif usulan mesin Trak
 | 5 | `test_guard_pembagian_nol_alternatif_bernilai_identik` | Menguji kondisi batas saat seluruh alternatif memiliki nilai kriteria yang persis sama, menyebabkan jarak ideal positif dan negatif bernilai $0$ ($D^+ = D^- = 0$). | Sistem mengaktifkan aturan *tie-breaker* matematis dengan menetapkan $V_i = 0.5000000000$ secara adil untuk seluruh alternatif identik. | **LULUS** |
 | 6 | `test_kriteria_nonaktif_diabaikan_dan_penilaian_kosong_nol` | Menguji pengabaian kriteria yang dinonaktifkan oleh administrator (`is_active = false`) serta penanganan nilai kosong (*null*) agar diisi angka 0 secara otomatis. | Matriks keputusan hanya mengikutsertakan kriteria aktif, dan alternatif dengan nilai kosong berhasil diproses tanpa menimbulkan *exception*. | **LULUS** |
 | 7 | `test_pengajuan_draft_ditolak_tanpa_penilaian_dikecualikan` | Menguji query isolasi data: memastikan usulan berstatus `draft`, usulan yang ditolak, dan usulan untuk jenis alsintan lain tidak ikut terhitung ke dalam antrean. | Sistem secara presisi hanya menyaring pengajuan berstatus `dinilai` pada kategori alsintan yang sama persis. | **LULUS** |
-| 8 | `test_exception_jika_tidak_ada_kriteria_aktif` | Menguji penanganan kondisi galat jika basis data tidak memiliki kriteria aktif. | Sistem melempar `\InvalidArgumentException` dengan pesan formal yang jelas untuk memandu administrator dinas. | **LULUS** |
-| 9 | `test_exception_jika_alternatif_kurang_dari_dua` | Menguji syarat minimal perbandingan alternatif TOPSIS (harus ada minimal 2 usulan agar perankingan valid). | Sistem melempar pengecualian saat alternatif hanya berjumlah 1 atau kosong, mencegah hasil peringkat semu. | **LULUS** |
-| 10 | `test_hitung_ulang_memperbarui_hasil_tanpa_duplikasi` | Menguji idempotensi penyimpanan hasil: memastikan proses hitung ulang (*re-calculate*) memperbarui entri yang ada tanpa membuat baris ganda pada tabel `hasil_topsis`. | Jumlah baris pada tabel `hasil_topsis` tetap konstan, batch kalkulasi baru diperbarui, dan status seluruh usulan berubah menjadi `dirangking`. | **LULUS** |
+| 8 | `test_melempar_exception_jika_tidak_ada_kriteria_aktif` | Menguji penanganan kondisi galat jika basis data tidak memiliki kriteria aktif. | Sistem melempar `\RuntimeException` dengan pesan formal yang jelas untuk memandu administrator dinas. | **LULUS** |
+| 9 | `test_calon_tunggal_otomatis_ranking_satu_dengan_preferensi_penuh` | Menguji aturan adaptif calon tunggal (*single-candidate direct pass*) saat baru ada 1 usulan pada satu kategori alat. | Sistem menetapkan `nilai_preferensi` sebesar `1.0` dan `ranking = 1` tanpa menunda proses pengajuan. | **LULUS** |
+| 10 | `test_melempar_exception_jika_alternatif_kosong` | Menguji kondisi batas ketika belum terdapat satupun alternatif pengajuan yang dinilai. | Sistem melempar `\RuntimeException` dengan pesan bahwa belum ada alternatif yang siap dinilai. | **LULUS** |
+| 11 | `test_hitung_ulang_memperbarui_hasil_tanpa_duplikasi_dan_menghasilkan_batch_baru` | Menguji idempotensi penyimpanan hasil: memastikan proses hitung ulang (*re-calculate*) memperbarui entri yang ada tanpa membuat baris ganda pada tabel `hasil_topsis`. | Jumlah baris pada tabel `hasil_topsis` tetap konstan, batch kalkulasi baru diperbarui, dan status seluruh usulan berubah menjadi `dirangking`. | **LULUS** |
 
 ---
 
@@ -104,7 +117,20 @@ Pengujian fitur ini memvalidasi siklus hidup berkas fisik proposal permohonan pa
 
 ---
 
-### 5. Hasil Pengujian Audit Keamanan Kernel & AppSec (`test_security_audit.php`)
+### 5. Rincian Skenario Pengujian Fitur: Survei IKM & Kurasi Beranda (`UlasanLayananTest.php`)
+
+Pengujian fitur ini memverifikasi keamanan data dan alur moderasi pada tabel ke-10 (`ulasan_layanans`), termasuk perlindungan hak akses dan pembatasan tayang di beranda publik.
+
+| No | Kode Pengujian | Skenario Alur Kerja yang Diuji | Asersi Utama yang Dilakukan | Hasil Evaluasi |
+|:--:|:---|:---|:---|:---:|
+| 1 | `test_poktan_dapat_mengirim_ulasan_dan_default_tersembunyi` | Poktan mengirimkan penilaian bintang 5 dan komentar masukan melalui endpoint `poktan.ulasan.store`. | Rekaman tersimpan pada tabel `ulasan_layanans` dengan nilai `is_tampil_landing = false` agar tidak langsung tayang tanpa persetujuan. | **LULUS** |
+| 2 | `test_kepala_bidang_dapat_mengkurasi_dan_menyetujui_ulasan_ke_beranda` | Kepala Bidang mengklik tombol kurasi pada endpoint `kepbid.ulasan.toggle_landing`. | Atribut `is_tampil_landing` berubah menjadi `true`, `ditinjau_oleh` terisi ID Kepala Bidang, dan `ditinjau_pada` tercatat. | **LULUS** |
+| 3 | `test_non_kepala_bidang_ditolak_saat_mencoba_moderasi_ulasan` | Admin Dinas maupun Kelompok Tani mencoba memanggil endpoint kurasi ulasan milik Kepala Bidang. | `RoleMiddleware` menggagalkan permintaan dan mengalihkan pengguna ke dashboard peran masing-masing; status ulasan tetap `false`. | **LULUS** |
+| 4 | `test_landing_page_maksimal_menampilkan_tiga_ulasan_terkurasi` | Sebanyak 5 ulasan disetujui oleh Kepala Bidang, lalu dilakukan permintaan `GET` ke rute `landing`. | Koleksi `$ulasanLanding` yang diteruskan ke tampilan beranda dibatasi tepat sebanyak 3 item teratas. | **LULUS** |
+
+---
+
+### 6. Hasil Pengujian Audit Keamanan Kernel & AppSec (`test_security_audit.php`)
 
 Selain pengujian fungsional matematis dan retensi, sistem dievaluasi menggunakan skrip uji keamanan independen `test_security_audit.php` yang mencakup 22 indikator pengujian kerentanan aplikasi web:
 
@@ -158,9 +184,10 @@ HASIL AUDIT KEAMANAN: 22 DARI 22 PENGUJIAN LOLOS (100% SUCCESS)
 
 ---
 
-### 6. Kesimpulan Hasil Pengujian White Box
+### 7. Kesimpulan Hasil Pengujian White Box
 
 Berdasarkan seluruh hasil pengujian kotak putih yang telah dilaksanakan:
-1. Algoritma 6 langkah TOPSIS pada `TopsisCalculationService` terbukti memiliki presisi matematis sempurna dan bebas dari potensi galat sistem saat dihadapkan pada kondisi ekstrem.
-2. Mekanisme manajemen retensi berkas fisik 90 hari berhasil menghapus dokumen kedaluwarsa secara otomatis tanpa menghilangkan data histori perankingan usulan.
-3. Seluruh mekanisme pengamanan otorisasi data (*Anti-IDOR*), validasi kata sandi, dan pembatasan akses peran telah teruji 100% lulus tanpa ditemukan celah kerentanan.
+1. Algoritma 6 langkah TOPSIS beserta aturan adaptif calon tunggal ($m = 1$) pada `TopsisCalculationService` terbukti memiliki presisi matematis sempurna dan bebas dari potensi galat sistem saat dihadapkan pada kondisi ekstrem.
+2. Mekanisme manajemen retensi berkas fisik 90 hari (dan 13 bulan untuk usulan disetujui) berhasil menghapus dokumen kedaluwarsa secara otomatis tanpa menghilangkan data histori perankingan usulan.
+3. Modul Survei IKM & Kurasi Ulasan (`UlasanLayanan`) terbukti aman dari pengubahan hak akses non-Kepala Bidang serta konsisten membatasi penayangan maksimal 3 ulasan terkurasi pada beranda publik.
+4. Seluruh mekanisme pengamanan otorisasi data (*Anti-IDOR*), validasi kata sandi, dan pembatasan akses peran telah teruji 100% lulus tanpa ditemukan celah kerentanan.
