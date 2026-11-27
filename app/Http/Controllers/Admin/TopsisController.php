@@ -51,8 +51,8 @@ class TopsisController extends Controller
         $hasilKalkulasi = null;
         $paginatedRanking = null;
 
-        // Jika kandidat sudah ada minimal 2 alternatif, jalankan kalkulasi secara langsung
-        if ($totalKandidat >= 2) {
+        // Jika kandidat sudah ada minimal 1 alternatif yang telah dinilai, jalankan kalkulasi
+        if ($totalKandidat >= 1) {
             try {
                 $hasilKalkulasi = $this->topsisService->hitung((int)$selectedId, (int)(Auth::id() ?? 1));
                 $kandidatsById  = $hasilKalkulasi['pengajuans'];

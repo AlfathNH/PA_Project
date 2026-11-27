@@ -65,8 +65,8 @@ class TopsisCalculationService
             ])
             ->get();
 
-        if ($pengajuans->count() < 2) {
-            throw new \RuntimeException('Minimal 2 alternatif (Poktan) yang sudah dinilai diperlukan untuk kalkulasi TOPSIS. Saat ini baru ada ' . $pengajuans->count() . ' alternatif berpenilaian.');
+        if ($pengajuans->count() < 1) {
+            throw new \RuntimeException('Belum ada alternatif (Kelompok Tani) yang siap dinilai untuk kategori alat ini.');
         }
 
         // Buat ID unik untuk batch kalkulasi ini (untuk audit trail)
@@ -77,32 +77,65 @@ class TopsisCalculationService
         // ----------------------------------------------------------------
         $matriks = $this->langkah1_bangunMatriks($pengajuans, $kriterias);
 
-        // ----------------------------------------------------------------
-        // LANGKAH 2: Normalisasi Matriks (Euclidean Normalization)
-        // ----------------------------------------------------------------
-        $matriksNormal = $this->langkah2_normalisasiMatriks($matriks, $kriterias);
+        // KONDISI ADAPTIF CALON TUNGGAL (m = 1) vs MULTI-ALTERNATIF (m >= 2)
+        if ($pengajuans->count() === 1) {
+            // ATURAN PENUGASAN LANGSUNG (SINGLE-CANDIDATE DIRECT PASS):
+            // Jika hanya 1 kelompok tani yang mengajukan dan lolos verifikasi berkas,
+            // alternatif tunggal langsung ditetapkan sebagai Peringkat 1 dengan preferensi sempurna (Vi = 1.0)
+            // agar proses persetujuan dinas tidak mandek menunggu pendaftar lain.
+            $pId = $pengajuans->first()->id;
+            $matriksNormal = [];
+            $matriksTermobot = [];
+            $idealPositif = [];
+            $idealNegatif = [];
 
-        // ----------------------------------------------------------------
-        // LANGKAH 3: Normalisasi Matriks Terbobot
-        // ----------------------------------------------------------------
-        $matriksTermobot = $this->langkah3_normalisasiTermobot($matriksNormal, $kriterias);
+            foreach ($kriterias as $kId => $kriteria) {
+                $matriksNormal[$pId][$kId] = 1.0;
+                $bobotFloat = (float) $kriteria->bobot;
+                $matriksTermobot[$pId][$kId] = $bobotFloat;
+                $idealPositif[$kId] = $bobotFloat;
+                $idealNegatif[$kId] = 0.0;
+            }
 
-        // ----------------------------------------------------------------
-        // LANGKAH 4: Tentukan Solusi Ideal Positif (A+) dan Negatif (A-)
-        // ----------------------------------------------------------------
-        [$idealPositif, $idealNegatif] = $this->langkah4_solusiIdeal($matriksTermobot, $kriterias);
+            $jarakPositif = [$pId => 0.0];
+            $jarakNegatif = [$pId => 1.0];
+            $ranking = [
+                [
+                    'pengajuan_id'     => $pId,
+                    'nilai_preferensi' => 1.0000000000,
+                    'ranking'          => 1,
+                    'jarak_positif'    => 0.0,
+                    'jarak_negatif'    => 1.0,
+                ]
+            ];
+        } else {
+            // ----------------------------------------------------------------
+            // LANGKAH 2: Normalisasi Matriks (Euclidean Normalization)
+            // ----------------------------------------------------------------
+            $matriksNormal = $this->langkah2_normalisasiMatriks($matriks, $kriterias);
 
-        // ----------------------------------------------------------------
-        // LANGKAH 5: Hitung Jarak Euclidean D+ dan D-
-        // ----------------------------------------------------------------
-        [$jarakPositif, $jarakNegatif] = $this->langkah5_jarakEuclidean(
-            $matriksTermobot, $idealPositif, $idealNegatif
-        );
+            // ----------------------------------------------------------------
+            // LANGKAH 3: Normalisasi Matriks Terbobot
+            // ----------------------------------------------------------------
+            $matriksTermobot = $this->langkah3_normalisasiTermobot($matriksNormal, $kriterias);
 
-        // ----------------------------------------------------------------
-        // LANGKAH 6: Hitung Nilai Preferensi (Vi) dan Susun Ranking
-        // ----------------------------------------------------------------
-        $ranking = $this->langkah6_nilaiPreferensi($jarakPositif, $jarakNegatif);
+            // ----------------------------------------------------------------
+            // LANGKAH 4: Tentukan Solusi Ideal Positif (A+) dan Negatif (A-)
+            // ----------------------------------------------------------------
+            [$idealPositif, $idealNegatif] = $this->langkah4_solusiIdeal($matriksTermobot, $kriterias);
+
+            // ----------------------------------------------------------------
+            // LANGKAH 5: Hitung Jarak Euclidean D+ dan D-
+            // ----------------------------------------------------------------
+            [$jarakPositif, $jarakNegatif] = $this->langkah5_jarakEuclidean(
+                $matriksTermobot, $idealPositif, $idealNegatif
+            );
+
+            // ----------------------------------------------------------------
+            // LANGKAH 6: Hitung Nilai Preferensi (Vi) dan Susun Ranking
+            // ----------------------------------------------------------------
+            $ranking = $this->langkah6_nilaiPreferensi($jarakPositif, $jarakNegatif);
+        }
 
         // Simpan hasil ke database dan kembalikan data lengkap untuk tampilan
         $hasilLengkap = $this->simpanHasilKeDatabase(

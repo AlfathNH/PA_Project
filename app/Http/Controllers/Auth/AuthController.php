@@ -370,11 +370,8 @@ class AuthController extends Controller
             return $newUser;
         });
 
-        // Login otomatis setelah registrasi berhasil
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->route('poktan.dashboard')->with('success', 'Selamat datang! Pendaftaran Kelompok Tani ' . $request->nama_poktan . ' berhasil. Anda sekarang dapat mengajukan usulan bantuan Alsintan.');
+        // Jangan login otomatis; arahkan ke halaman login agar pengguna memverifikasi kredensialnya
+        return redirect()->route('login')->with('success', 'Pendaftaran akun Kelompok Tani ' . $request->nama_poktan . ' berhasil! Silakan masuk ke sistem menggunakan email dan kata sandi yang baru saja Anda buat.');
     }
 
     /**

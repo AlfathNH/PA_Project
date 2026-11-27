@@ -449,15 +449,15 @@
                 <span class="material-symbols-outlined text-3xl">calculate</span>
             </div>
             <div class="max-w-md mx-auto space-y-2">
-                <h3 class="text-lg font-extrabold text-obsidian font-urbanist">Belum Cukup Alternatif untuk Dihitung</h3>
+                <h3 class="text-lg font-extrabold text-obsidian font-urbanist">Belum Ada Alternatif yang Siap Dihitung</h3>
                 <p class="text-xs text-muted-green leading-relaxed">
-                    Terdapat <strong>{{ $kandidats->count() }} kelompok tani</strong> yang sudah dinilai untuk kategori alat ini. Metode TOPSIS memerlukan minimal 2 alternatif untuk membandingkan jarak terhadap solusi ideal.
+                    Belum ada kelompok tani yang telah dinilai kriteria lapangannya untuk kategori alat ini. Sistem mendukung kalkulasi calon tunggal (Rangking 1 Otomatis) maupun pemeringkatan banyak alternatif secara multi-kriteria.
                 </p>
                 <div class="pt-3 flex items-center justify-center gap-2">
                     <a href="{{ route('admin.pengajuan.index') }}" 
                        class="px-5 py-2.5 rounded-full bg-forest-dark text-white text-xs font-bold hover:bg-forest-deep transition flex items-center gap-1.5 shadow-sm">
                         <span class="material-symbols-outlined text-sm">checklist</span>
-                        <span>Input Nilai Poktan Lain</span>
+                        <span>Input Penilaian Lapangan</span>
                     </a>
                 </div>
             </div>

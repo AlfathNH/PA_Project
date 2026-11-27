@@ -147,12 +147,19 @@
                 setTimeout(() => { if (this.toastMessage === msg) this.toastMessage = ''; }, 5000);
             },
 
+            pwHasMin() { return (this.password || '').length >= 8; },
+            pwHasUpper() { return /[A-Z]/.test(this.password || ''); },
+            pwHasLower() { return /[a-z]/.test(this.password || ''); },
+            pwHasNumber() { return /[0-9]/.test(this.password || ''); },
+            pwIsStrong() { return this.pwHasMin() && this.pwHasUpper() && this.pwHasLower() && this.pwHasNumber(); },
+            pwMatches() { return Boolean(this.password) && this.password === (this.password_confirmation || ''); },
+
             isStep1Valid() {
                 return (this.name || '').trim().length > 0 && 
                        (this.email || '').trim().length > 0 && 
                        (this.email || '').includes('@') && 
-                       (this.password || '').length >= 8 && 
-                       (this.password || '') === (this.password_confirmation || '');
+                       this.pwIsStrong() &&
+                       this.pwMatches();
             },
 
             isStep2Valid() {
@@ -259,8 +266,8 @@
                         const pc = document.getElementById('password_confirmation');
                         if (!this.name || !this.name.trim()) { n.focus(); }
                         else if (!this.email || !this.email.trim() || !this.email.includes('@')) { e.focus(); }
-                        else if (!this.password || this.password.length < 8) { this.toastMessage = 'Kata sandi minimal 8 karakter dengan kombinasi huruf dan angka.'; p.focus(); }
-                        else if (this.password !== this.password_confirmation) { this.toastMessage = 'Konfirmasi kata sandi tidak cocok. Mohon samakan.'; pc.focus(); }
+                        else if (!this.pwIsStrong()) { this.toastMessage = 'Kata sandi belum memenuhi kriteria (min. 8 karakter, huruf besar, huruf kecil, dan angka).'; p.focus(); }
+                        else if (!this.pwMatches()) { this.toastMessage = 'Konfirmasi kata sandi tidak cocok. Mohon samakan.'; pc.focus(); }
                     } else if (st === 2) {
                         const pk = document.getElementById('nama_poktan');
                         const k = document.getElementById('nama_ketua');
@@ -504,8 +511,41 @@
                                     <span class="material-symbols-outlined text-lg" id="pw-icon-1">visibility</span>
                                 </button>
                             </div>
-                            <span class="text-[10px] text-muted-green block mt-1">Gunakan kombinasi huruf besar, huruf kecil, dan angka</span>
-                            @error('password') <p class="text-xs text-red-600 mt-0.5 font-semibold">{{ $message }}</p> @enderror
+
+                            <!-- Indikator Ceklis Ketentuan Sandi Interaktif -->
+                            <div class="mt-2.5 p-3 rounded-2xl bg-bone-canvas/70 border border-bone-slate space-y-1.5 text-[11px]">
+                                <div class="font-extrabold text-obsidian flex items-center justify-between">
+                                    <span>Ketentuan Keamanan Sandi:</span>
+                                    <span class="text-[10px] font-bold" :class="pwIsStrong() ? 'text-forest-dark' : 'text-muted-green'">
+                                        <span x-show="pwIsStrong()" x-cloak class="inline-flex items-center gap-1 text-emerald-700">
+                                            <span class="material-symbols-outlined text-xs">verified</span>
+                                            Sandi Kuat & Terpenuhi
+                                        </span>
+                                        <span x-show="!pwIsStrong()">Wajib Terpenuhi</span>
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5 pt-1">
+                                    <div class="flex items-center gap-1.5 transition-colors" :class="pwHasMin() ? 'text-forest-dark font-extrabold' : 'text-muted-green'">
+                                        <span class="material-symbols-outlined text-sm shrink-0" :class="pwHasMin() ? 'text-emerald-700 font-bold' : 'text-muted-green/50'">
+                                            <span x-text="pwHasMin() ? 'check_circle' : 'radio_button_unchecked'"></span>
+                                        </span>
+                                        <span>Min. 8 Karakter</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 transition-colors" :class="pwHasUpper() && pwHasLower() ? 'text-forest-dark font-extrabold' : 'text-muted-green'">
+                                        <span class="material-symbols-outlined text-sm shrink-0" :class="pwHasUpper() && pwHasLower() ? 'text-emerald-700 font-bold' : 'text-muted-green/50'">
+                                            <span x-text="pwHasUpper() && pwHasLower() ? 'check_circle' : 'radio_button_unchecked'"></span>
+                                        </span>
+                                        <span>Huruf Besar & Kecil</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 transition-colors" :class="pwHasNumber() ? 'text-forest-dark font-extrabold' : 'text-muted-green'">
+                                        <span class="material-symbols-outlined text-sm shrink-0" :class="pwHasNumber() ? 'text-emerald-700 font-bold' : 'text-muted-green/50'">
+                                            <span x-text="pwHasNumber() ? 'check_circle' : 'radio_button_unchecked'"></span>
+                                        </span>
+                                        <span>Mengandung Angka</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @error('password') <p class="text-xs text-red-600 mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Konfirmasi Kata Sandi -->
@@ -523,6 +563,13 @@
                                 <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'pw-icon-2')" aria-label="Tampilkan atau sembunyikan ulangi kata sandi" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-green hover:text-obsidian transition">
                                     <span class="material-symbols-outlined text-lg" id="pw-icon-2">visibility</span>
                                 </button>
+                            </div>
+
+                            <!-- Indikator Kecocokan Konfirmasi Kata Sandi -->
+                            <div x-show="(password_confirmation || '').length > 0" x-cloak class="mt-1.5 flex items-center gap-1.5 text-xs font-bold"
+                                 :class="pwMatches() ? 'text-forest-dark' : 'text-red-600'">
+                                <span class="material-symbols-outlined text-sm" x-text="pwMatches() ? 'check_circle' : 'cancel'"></span>
+                                <span x-text="pwMatches() ? 'Konfirmasi kata sandi cocok.' : 'Konfirmasi kata sandi belum sama.'"></span>
                             </div>
                         </div>
                     </div>
@@ -620,9 +667,18 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-green">
                                     <span class="material-symbols-outlined text-lg">call</span>
                                 </div>
-                                <input type="text" id="no_hp_ketua" name="no_hp_ketua" x-model="no_hp_ketua" value="{{ old('no_hp_ketua') }}" 
-                                       placeholder="08xxxxxxxxxx"
-                                       class="w-full pl-10 pr-3.5 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('no_hp_ketua') border-red-500 @enderror">
+                                <input type="tel" 
+                                       inputmode="numeric" 
+                                       pattern="[0-9]*"
+                                       id="no_hp_ketua" 
+                                       name="no_hp_ketua" 
+                                       x-model="no_hp_ketua" 
+                                       value="{{ old('no_hp_ketua') }}" 
+                                       @input="no_hp_ketua = no_hp_ketua.replace(/[^0-9]/g, '')"
+                                       @keypress="if (!/[0-9]/.test($event.key)) $event.preventDefault()"
+                                       placeholder="Contoh: 081234567890"
+                                       maxlength="15"
+                                       class="no-spin tabular-nums w-full pl-10 pr-3.5 py-3 bg-bone-canvas/80 border border-bone-slate rounded-2xl text-xs sm:text-sm font-semibold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition @error('no_hp_ketua') border-red-500 @enderror">
                             </div>
                             @error('no_hp_ketua') <p class="text-xs text-red-600 mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>

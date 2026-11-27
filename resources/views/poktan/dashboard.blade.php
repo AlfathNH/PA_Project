@@ -768,8 +768,17 @@
                     </div>
                     <div>
                         <label for="edit_no_hp" class="block text-xs font-bold text-obsidian mb-1">Nomor HP / WhatsApp *</label>
-                        <input type="text" id="edit_no_hp" name="no_hp_ketua" value="{{ old('no_hp_ketua', $poktan?->no_hp_ketua) }}"
-                               class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
+                        <input type="tel" 
+                               inputmode="numeric" 
+                               pattern="[0-9]*" 
+                               id="edit_no_hp" 
+                               name="no_hp_ketua" 
+                               value="{{ old('no_hp_ketua', $poktan?->no_hp_ketua) }}"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                               onkeypress="if (!/[0-9]/.test(event.key)) event.preventDefault()"
+                               placeholder="Contoh: 081234567890"
+                               maxlength="15"
+                               class="no-spin tabular-nums w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
                     </div>
                 </div>
 
