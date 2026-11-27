@@ -210,6 +210,24 @@
                       formError: '',
                       alsintanId: '{{ old('jenis_alsintan_id', '') }}',
                       alasan: '{{ addslashes(old('alasan_pengajuan', '')) }}',
+                      hasFile: false,
+                      fileName: '',
+                      onFileChange(e) {
+                          const file = e.target.files && e.target.files[0];
+                          if (file) {
+                              this.hasFile = true;
+                              this.fileName = file.name;
+                          } else {
+                              this.hasFile = false;
+                              this.fileName = '';
+                          }
+                      },
+                      resetFile() {
+                          const input = document.getElementById('berkas_proposal');
+                          if (input) input.value = '';
+                          this.hasFile = false;
+                          this.fileName = '';
+                      },
                       validatePengajuan(e) {
                           this.formError = '';
                           if (!this.alsintanId) {
@@ -329,12 +347,39 @@
 
                 <!-- Langkah 4: Lampiran Berkas Proposal Resmi (PDF) - Terproteksi Anti-Malware -->
                 <div>
-                    <label for="berkas_proposal" class="flex flex-wrap items-center justify-between gap-1.5 text-xs sm:text-sm font-black text-forest-dark uppercase tracking-wider mb-1.5">
-                        <span class="leading-tight">Langkah 4: Lampiran Proposal (PDF)</span>
-                        <span class="shrink-0 whitespace-nowrap text-[10px] font-bold text-muted-green normal-case bg-bone-canvas px-2.5 py-1 rounded-full border border-bone-slate">Opsional (Format .PDF)</span>
-                    </label>
-                    <input type="file" id="berkas_proposal" name="berkas_proposal" accept="application/pdf"
-                           class="w-full px-3.5 py-2.5 bg-bone-canvas/70 border-2 border-bone-slate rounded-2xl text-xs font-bold text-obsidian file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-forest-dark file:text-lime-harvest hover:file:bg-forest-accent cursor-pointer transition focus:ring-2 focus:ring-forest-dark focus:bg-white @error('berkas_proposal') border-red-500 @enderror">
+                    <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+                        <label for="berkas_proposal" class="text-xs sm:text-sm font-black text-forest-dark uppercase tracking-wider">
+                            Langkah 4: Lampiran Proposal (PDF)
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <!-- Tombol Reset / Batalkan File Jika Sudah Dipilih -->
+                            <button type="button" 
+                                    x-cloak
+                                    x-show="hasFile"
+                                    @click="resetFile()"
+                                    class="text-[11px] font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded-full flex items-center gap-1 transition shadow-2xs">
+                                <span class="material-symbols-outlined text-xs">close</span>
+                                <span>Batal Pilih / Kosongkan File</span>
+                            </button>
+                            <span class="shrink-0 whitespace-nowrap text-[10px] font-bold text-muted-green normal-case bg-bone-canvas px-2.5 py-1 rounded-full border border-bone-slate">Opsional (Format .PDF)</span>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <input type="file" id="berkas_proposal" name="berkas_proposal" accept="application/pdf"
+                               @change="onFileChange($event)"
+                               class="w-full px-3.5 py-2.5 bg-bone-canvas/70 border-2 border-bone-slate rounded-2xl text-xs font-bold text-obsidian file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-forest-dark file:text-lime-harvest hover:file:bg-forest-accent cursor-pointer transition focus:ring-2 focus:ring-forest-dark focus:bg-white @error('berkas_proposal') border-red-500 @enderror">
+                    </div>
+                    <!-- Info File Terpilih & Tombol Hapus Cepat -->
+                    <div x-cloak x-show="hasFile" class="mt-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2 text-xs text-forest-dark font-medium">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="material-symbols-outlined text-red-600 text-base">picture_as_pdf</span>
+                            <span class="truncate font-bold" x-text="fileName"></span>
+                        </div>
+                        <button type="button" @click="resetFile()" class="text-xs font-bold text-red-700 hover:text-red-900 hover:underline shrink-0 flex items-center gap-0.5">
+                            <span class="material-symbols-outlined text-xs">delete</span>
+                            <span>Hapus</span>
+                        </button>
+                    </div>
                     <p class="text-[10px] text-muted-green mt-1 flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs text-forest-dark">lock</span>
                         Standar Keamanan: Dokumen tersimpan di brankas digital privat (enkripsi UUID), maksimal 5 MB.
@@ -824,9 +869,26 @@
                                class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
                     </div>
                     <div>
-                        <label for="edit_kecamatan" class="block text-xs font-bold text-obsidian mb-1">Kecamatan *</label>
-                        <input type="text" id="edit_kecamatan" name="kecamatan" value="{{ old('kecamatan', $poktan?->kecamatan) }}" required
-                               class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white">
+                        <label for="edit_kecamatan" class="block text-xs font-bold text-obsidian mb-1">Kecamatan di Kab. Subang *</label>
+                        @php
+                            $subangKecamatans = [
+                                'Binong', 'Blanakan', 'Ciasem', 'Ciater', 'Cibogo', 'Cijambe', 'Cikaum', 
+                                'Cipeundeuy', 'Cipunagara', 'Cisalak', 'Compreng', 'Dawuan', 'Jalancagak', 
+                                'Kalijati', 'Kasomalang', 'Legonkulon', 'Pabuaran', 'Pagaden', 'Pagaden Barat', 
+                                'Pamanukan', 'Patokbeusi', 'Purwadadi', 'Pusakajaya', 'Pusakanagara', 
+                                'Sagalaherang', 'Serangpanjang', 'Subang', 'Sukasari', 'Tambakdahan', 'Tanjungsiang'
+                            ];
+                            $currentKec = old('kecamatan', $poktan?->kecamatan);
+                        @endphp
+                        <select id="edit_kecamatan" name="kecamatan" required
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-bone-slate bg-bone-canvas/60 text-xs sm:text-sm font-bold text-obsidian focus:ring-2 focus:ring-forest-dark focus:bg-white transition">
+                            <option value="">-- Pilih Kecamatan di Subang --</option>
+                            @foreach($subangKecamatans as $kec)
+                                <option value="{{ $kec }}" {{ $currentKec == $kec ? 'selected' : '' }}>
+                                    {{ $kec }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
