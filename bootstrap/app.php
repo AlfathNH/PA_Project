@@ -15,9 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // Percayai semua reverse proxy Vercel agar request terbaca sebagai HTTPS
         $middleware->trustProxies(at: '*');
 
-        $middleware->web(append: [
-            \App\Http\Middleware\SecurityHeadersMiddleware::class,
-        ]);
+        $middleware->web(
+            append: [
+                \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            ],
+            replace: [
+                \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class => \App\Http\Middleware\PreventRequestForgeryMiddleware::class,
+            ],
+        );
 
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,

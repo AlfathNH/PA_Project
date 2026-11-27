@@ -9,56 +9,21 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : time() }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-subang-emblem.png') }}?v={{ file_exists(public_path('images/logo-subang-emblem.png')) ? filemtime(public_path('images/logo-subang-emblem.png')) : time() }}">
 
-    <!-- Tailwind CSS Engine -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        // User Reference Exact Palette (media_1793774852232_3ac505b4)
-                        "lime-harvest": "#E1F12E",
-                        "lime-harvest-hover": "#CDE01F",
-                        "amber-harvest": "#FFB555",
-                        "amber-harvest-hover": "#ECA03C",
-                        "celery-cream": "#EDF0C2",
-                        "bone-slate": "#E3E4D6",
-                        "bone-canvas": "#F4F5ED",
-                        
-                        // Institutional Authority - Dinas Pertanian Kabupaten Subang
-                        "forest-dark": "#14532D",
-                        "forest-deep": "#0F3F22",
-                        "forest-hover": "#166534",
-                        "obsidian": "#1C241D",
-                        "muted-green": "#4D564F",
-                        "leaf-emerald": "#16A34A"
-                    },
-                    fontFamily: {
-                        "sans": ["Urbanist", "Plus Jakarta Sans", "system-ui", "sans-serif"],
-                        "urbanist": ["Urbanist", "sans-serif"],
-                        "editorial": ["Newsreader", "Georgia", "serif"]
-                    },
-                    borderRadius: {
-                        "2xl": "1rem",
-                        "3xl": "1.5rem",
-                        "4xl": "2rem"
-                    }
-                }
-            }
-        };
-    </script>
+    <!-- Pre-compiled Tailwind CSS Engine (First-Party) -->
+    <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}?v={{ file_exists(public_path('css/tailwind.min.css')) ? filemtime(public_path('css/tailwind.min.css')) : time() }}">
 
-    <!-- Alpine.js for Modern Reactive Components -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <!-- Alpine.js (Terbaru v3.17.5 dengan Subresource Integrity SHA-384) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"
+            integrity="sha384-FYLKjwG3aohNhNZoVG8sY/5ntunm+MqylL90Q+rT3OM7AwV9/BKFjk/RjoIpIgsI"
+            crossorigin="anonymous"></script>
 
-    <!-- Google Fonts: Urbanist (Reference) & Newsreader (Editorial) & Material Symbols -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,300..900;1,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Local Self-Hosted Fonts & Material Symbols -->
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ file_exists(public_path('css/fonts.css')) ? filemtime(public_path('css/fonts.css')) : time() }}">
+    <!-- Font Awesome (v6.7.2 dengan Subresource Integrity SHA-384) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha384-nRgPTkuX86pH8yjPJUAFuASXQSSl2/bBUiNV47vSYpKFxHJhbcrGnmlYpYJMeD7a"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
 
     <style>
         body { 
@@ -638,7 +603,9 @@
                      class="h-6 w-auto object-contain">
                 <span>&copy; 2026 <strong>Dinas Pertanian Pemerintah Kabupaten Subang</strong> &bull; SPK Bantuan Alsintan (Metode TOPSIS)</span>
             </div>
-            <div class="flex items-center space-x-4 text-[11px] font-semibold text-forest-dark uppercase tracking-wider">
+            <div class="flex flex-wrap items-center justify-center gap-3 text-[11px] font-semibold text-forest-dark uppercase tracking-wider">
+                <a href="{{ route('privacy') }}" class="hover:underline">Privasi &amp; Cookie</a>
+                <span>&bull;</span>
                 <span>Karya Utama Satya Nagara</span>
                 <span>&bull;</span>
                 <span>Standar BPKP / ANRI</span>

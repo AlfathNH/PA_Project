@@ -41,6 +41,11 @@ Example (Tests\Feature\Example)
 Example (Tests\Unit\Example)
  ✔ That true is true
 
+Security Hardening (Tests\Feature\SecurityHardening)
+ ✔ Halaman publik dan privasi mengirim header keamanan modern
+ ✔ Halaman login menerapkan anti scraping dan anti cache
+ ✔ Proteksi csrf sesi tetap aktif tanpa cookie xsrf token
+
 Topsis Calculation Service (Tests\Unit\TopsisCalculationService)
  ✔ Akurasi 6 langkah topsis sesuai dataset bab iv 4 poktan 5 kriteria
  ✔ Akurasi analitik 6 langkah topsis kriteria benefit dan cost
@@ -60,14 +65,14 @@ Ulasan Layanan (Tests\Feature\UlasanLayanan)
  ✔ Non kepala bidang ditolak saat mencoba moderasi ulasan
  ✔ Landing page maksimal menampilkan tiga ulasan terkurasi
 
-OK (26 tests, 284 assertions)
-Time: 00:01.735, Memory: 60.00 MB
+OK (29 tests, 307 assertions)
+Time: 00:03.470, Memory: 60.00 MB
 ```
 
-* **Total Skenario Pengujian Unit & Fitur:** 26 Uji Kasus
-* **Total Pernyataan Verifikasi (*Assertions*):** 284 Assertions
+* **Total Skenario Pengujian Unit & Fitur:** 29 Uji Kasus
+* **Total Pernyataan Verifikasi (*Assertions*):** 307 Assertions
 * **Tingkat Keberhasilan:** 100% Lulus (*Zero Failure, Zero Error*)
-* **Waktu Eksekusi Komputasi:** 1,735 Detik
+* **Waktu Eksekusi Komputasi:** 3,470 Detik
 
 ---
 
@@ -132,7 +137,7 @@ Pengujian fitur ini memverifikasi keamanan data dan alur moderasi pada tabel ke-
 
 ### 6. Hasil Pengujian Audit Keamanan Kernel & AppSec (`test_security_audit.php`)
 
-Selain pengujian fungsional matematis dan retensi, sistem dievaluasi menggunakan skrip uji keamanan independen `test_security_audit.php` yang mencakup 22 indikator pengujian kerentanan aplikasi web:
+Selain pengujian fungsional matematis dan retensi, sistem dievaluasi menggunakan skrip uji keamanan independen `test_security_audit.php` yang mencakup 26 indikator pengujian kerentanan aplikasi web:
 
 ```text
 === PENGUJIAN KEAMANAN APPSEC & HARDENING LARAVEL 11 ===
@@ -140,12 +145,16 @@ Selain pengujian fungsional matematis dan retensi, sistem dievaluasi menggunakan
 1. Pengujian Konfigurasi Storage Disk 'private':
  [PASS] Disk 'private' beroperasi optimal di storage/app/private
 
-2. Pengujian Security Headers Middleware:
+2. Pengujian Security Headers Middleware & Cookie Hardening:
  [PASS] Header Anti-Clickjacking: X-Frame-Options: SAMEORIGIN terpasang
  [PASS] Header Anti-MIME Sniffing: X-Content-Type-Options: nosniff terpasang
- [PASS] Header Proteksi XSS: X-XSS-Protection: 1; mode=block terpasang
+ [PASS] Header usang X-XSS-Protection dan informasi server X-Powered-By dihapus
+ [PASS] Header Content-Security-Policy (CSP) modern terpasang
+ [PASS] Header HSTS (Strict-Transport-Security) aktif untuk koneksi HTTPS
  [PASS] Header Referrer Leakage: Referrer-Policy terpasang
  [PASS] Header Pembatasan Sensor: Permissions-Policy terpasang
+ [PASS] Proteksi anti-scraping (X-Robots-Tag) dan no-store aktif pada rute privat/login
+ [PASS] Cookie XSRF-TOKEN non-HttpOnly dinonaktifkan dan cookie sesi wajib HttpOnly
 
 3. Pengujian Validasi Kata Sandi Kuat (Strong Password Rules):
  [PASS] Seluruh kata sandi lemah (tanpa kombinasi angka, huruf besar/kecil, min 8) ditolak
@@ -162,7 +171,7 @@ Selain pengujian fungsional matematis dan retensi, sistem dievaluasi menggunakan
 
 6. Pengujian Mass Assignment & Sensitive Column Protection:
  [PASS] Atribut 'password' dan 'remember_token' tersembunyi (hidden) dari serialisasi JSON/Array
- [PASS] Seluruh 9 Model Relasional utama memiliki proteksi $fillable eksplisit
+ [PASS] Seluruh 10 Model Relasional utama + penunjang memiliki proteksi $fillable eksplisit
 
 7. Pengujian Route & Middleware Role Enforcement:
  [PASS] Seluruh route krusial terkunci rapat dengan middleware 'auth' dan 'role' masing-masing
@@ -179,7 +188,7 @@ Selain pengujian fungsional matematis dan retensi, sistem dievaluasi menggunakan
 10. Pengujian Proteksi Path Traversal:
  [PASS] Pola manipulasi Path Traversal ('..', '/', '\') berhasil dideteksi dan diblokir
 
-HASIL AUDIT KEAMANAN: 22 DARI 22 PENGUJIAN LOLOS (100% SUCCESS)
+HASIL AUDIT KEAMANAN: 26 DARI 26 PENGUJIAN LOLOS (100% SUCCESS)
 ```
 
 ---

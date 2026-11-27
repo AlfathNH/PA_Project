@@ -1,5 +1,11 @@
 <?php
 
+// Nonaktifkan header X-Powered-By PHP dan sembunyikan informasi versi runtime
+@ini_set('expose_php', '0');
+if (function_exists('header_remove')) {
+    @header_remove('X-Powered-By');
+}
+
 // Paksa HTTPS flag pada lingkungan serverless Vercel agar tidak ada mixed-content HTTP
 $_SERVER['HTTPS'] = 'on';
 $_SERVER['SERVER_PORT'] = 443;

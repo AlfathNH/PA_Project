@@ -42,7 +42,12 @@ Route::get('/', function () {
         $totalUlasan = 42;
     }
     return view('landing', compact('totalPoktan', 'totalPengajuan', 'jenisAlsintan', 'ulasanLanding', 'avgRating', 'totalUlasan'));
-})->name('landing');
+})->middleware('throttle:60,1')->name('landing');
+
+// Halaman Kebijakan Privasi & Pemberitahuan Cookie (Kepatuhan UU PDP & GDPR)
+Route::get('/kebijakan-privasi', function () {
+    return view('privacy');
+})->middleware('throttle:60,1')->name('privacy');
 
 // Otentikasi (Login & Registrasi Mandiri Poktan) dengan Throttling Anti-Brute Force
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

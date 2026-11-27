@@ -49,19 +49,27 @@ try {
     assertTest(false, "Disk 'private' gagal: " . $e->getMessage());
 }
 
-// 2. Uji Security Headers Middleware
-echo "\n2. Pengujian Security Headers Middleware:\n";
+// 2. Uji Security Headers Middleware & Cookie Hardening
+echo "\n2. Pengujian Security Headers Middleware & Cookie Hardening:\n";
 $middleware = new \App\Http\Middleware\SecurityHeadersMiddleware();
-$request = Request::create('/login', 'GET');
+$request = Request::create('https://alsintan-delta.vercel.app/login', 'GET');
 $response = $middleware->handle($request, function ($req) {
-    return new Response('OK', 200);
+    $res = new Response('OK', 200);
+    $res->headers->set('X-Powered-By', 'PHP/8.5');
+    return $res;
 });
 
 assertTest($response->headers->get('X-Frame-Options') === 'SAMEORIGIN', "Header Anti-Clickjacking: X-Frame-Options: SAMEORIGIN terpasang");
 assertTest($response->headers->get('X-Content-Type-Options') === 'nosniff', "Header Anti-MIME Sniffing: X-Content-Type-Options: nosniff terpasang");
-assertTest($response->headers->get('X-XSS-Protection') === '1; mode=block', "Header Proteksi XSS: X-XSS-Protection: 1; mode=block terpasang");
+assertTest(!$response->headers->has('X-XSS-Protection') && !$response->headers->has('X-Powered-By'), "Header usang X-XSS-Protection dan informasi server X-Powered-By dihapus");
+assertTest(str_contains((string) $response->headers->get('Content-Security-Policy'), "default-src 'self'") && str_contains((string) $response->headers->get('Content-Security-Policy'), "object-src 'none'"), "Header Content-Security-Policy (CSP) modern terpasang");
+assertTest(str_contains((string) $response->headers->get('Strict-Transport-Security'), 'max-age=31536000'), "Header HSTS (Strict-Transport-Security) aktif untuk koneksi HTTPS");
 assertTest($response->headers->get('Referrer-Policy') === 'strict-origin-when-cross-origin', "Header Referrer Leakage: Referrer-Policy terpasang");
-assertTest(str_contains($response->headers->get('Permissions-Policy'), 'camera=()'), "Header Pembatasan Sensor: Permissions-Policy terpasang");
+assertTest(str_contains((string) $response->headers->get('Permissions-Policy'), 'camera=()'), "Header Pembatasan Sensor: Permissions-Policy terpasang");
+assertTest(str_contains((string) $response->headers->get('X-Robots-Tag'), 'noindex') && str_contains((string) $response->headers->get('Cache-Control'), 'no-store'), "Proteksi anti-scraping (X-Robots-Tag) dan no-store aktif pada rute privat/login");
+
+$csrfMiddleware = app(\App\Http\Middleware\PreventRequestForgeryMiddleware::class);
+assertTest(!$csrfMiddleware->shouldAddXsrfTokenCookie() && config('session.http_only') === true, "Cookie XSRF-TOKEN non-HttpOnly dinonaktifkan dan cookie sesi wajib HttpOnly");
 
 // 3. Uji Validasi Password Kuat
 echo "\n3. Pengujian Validasi Kata Sandi Kuat (Strong Password Rules):\n";
@@ -164,6 +172,7 @@ $relationalModels = [
     \App\Models\HasilTopsis::class,
     \App\Models\BerkasPengajuan::class,
     \App\Models\RiwayatStatusPengajuan::class,
+    \App\Models\UlasanLayanan::class,
     \App\Models\Kecamatan::class,
     \App\Models\PeriodeBantuan::class,
 ];
@@ -177,18 +186,20 @@ foreach ($relationalModels as $modelClass) {
         echo "   -> Model {$modelClass} tidak memiliki \$fillable!\n";
     }
 }
-assertTest($allModelsGuarded, "Seluruh 9 Model Relasional utama + utilitas memiliki proteksi \$fillable eksplisit");
+assertTest($allModelsGuarded, "Seluruh 10 Model Relasional utama + penunjang memiliki proteksi \$fillable eksplisit");
 
 // 7. Uji Route & Middleware Role Enforcement
 echo "\n7. Pengujian Route & Middleware Role Enforcement:\n";
 $routes = \Illuminate\Support\Facades\Route::getRoutes();
 
 $routeChecks = [
-    'admin.pengajuan.verifikasi' => ['auth', 'role:admin'],
-    'admin.topsis.hitung'        => ['auth', 'role:admin'],
-    'kepbid.putuskan'            => ['auth', 'role:kepala_bidang'],
-    'kepbid.pruning.run'         => ['auth', 'role:kepala_bidang'],
-    'poktan.pengajuan.store'     => ['auth', 'role:kelompok_tani'],
+    'admin.pengajuan.verifikasi'   => ['auth', 'role:admin'],
+    'admin.topsis.hitung'          => ['auth', 'role:admin'],
+    'kepbid.putuskan'              => ['auth', 'role:kepala_bidang'],
+    'kepbid.pruning.run'           => ['auth', 'role:kepala_bidang'],
+    'kepbid.ulasan.toggle_landing' => ['auth', 'role:kepala_bidang'],
+    'poktan.pengajuan.store'       => ['auth', 'role:kelompok_tani'],
+    'poktan.ulasan.store'          => ['auth', 'role:kelompok_tani'],
 ];
 
 $allRoutesGuarded = true;

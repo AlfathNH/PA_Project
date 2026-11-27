@@ -42,8 +42,9 @@ pa-spk-alsintan/
 │   │   │   ├── Controller.php                     # Base Controller induk Laravel
 │   │   │   └── UlasanLayananController.php        # Simpan survei IKM poktan (opsional) & moderasi kurasi KepBid
 │   │   └── Middleware/
+│   │       ├── PreventRequestForgeryMiddleware.php # Pengaman CSRF sesi HttpOnly tanpa cookie XSRF-TOKEN non-HttpOnly
 │   │       ├── RoleMiddleware.php                 # Proteksi akses rute berdasarkan peran pengguna
-│   │       └── SecurityHeadersMiddleware.php      # Hardening HTTP Headers (Anti-Clickjacking, XSS, MIME Sniffing)
+│   │       └── SecurityHeadersMiddleware.php      # Hardening HTTP Headers modern (CSP, HSTS, Anti-Scraping, No-Store)
 │   ├── Models/
 │   │   ├── BerkasPengajuan.php                    # Metadata berkas proposal PDF dan path privat storage
 │   │   ├── HasilTopsis.php                        # Nilai preferensi Vi, jarak D+, D-, dan peringkat rekomendasi
@@ -88,9 +89,11 @@ pa-spk-alsintan/
 │   └── id/
 │       └── pagination.php                         # Terjemahan resmi navigasi paginasi Bahasa Indonesia baku
 ├── public/
-│   ├── images/                                    # Aset statis logo Pemkab Subang, favicon, dan emblem resmi
+│   ├── css/                                       # Stylesheet terkompilasi lokal (tailwind.min.css, fonts.css)
+│   ├── fonts/                                     # Font WOFF2 self-hosted (Urbanist, Newsreader, Material Symbols)
+│   ├── images/                                    # Aset statis logo Pemkab Subang, foto hero lokal, & emblem resmi
 │   ├── index.php                                  # Pintu masuk utama eksekusi web server
-│   └── robots.txt                                 # Konfigurasi pengindeksan mesin pencari
+│   └── robots.txt                                 # Pembatasan perayapan AI Scraper & proteksi endpoint privat
 ├── resources/
 │   ├── css/
 │   │   └── app.css                                # Konfigurasi gaya CSS tambahan dan animasi
@@ -122,7 +125,8 @@ pa-spk-alsintan/
 │       ├── vendor/
 │       │   └── pagination/
 │       │       └── custom-tailwind.blade.php      # Template paginasi kustom responsif + fitur Jump to Page
-│       ├── landing.blade.php                      # Halaman profil informasi publik bantuan alsintan
+│       ├── landing.blade.php                      # Halaman profil informasi publik bantuan alsintan & banner cookie UU PDP
+│       ├── privacy.blade.php                      # Halaman Kebijakan Privasi, Retensi Data, dan Transparansi Cookie
 │       └── welcome.blade.php                      # Halaman perantara selamat datang
 ├── routes/
 │   ├── console.php                                # Penjadwalan perintah berkala (Auto-pruning harian 01:00 WIB)
@@ -136,6 +140,7 @@ pa-spk-alsintan/
 │   ├── Feature/
 │   │   ├── AutoPruning90HariTest.php              # Pengujian otomatis fitur retensi dan pembersihan berkas fisik
 │   │   ├── ExampleTest.php                        # Uji integrasi dasar HTTP
+│   │   ├── SecurityHardeningTest.php              # Uji HTTP headers (CSP, HSTS, X-Robots-Tag) & penghapusan XSRF-TOKEN
 │   │   └── UlasanLayananTest.php                  # Uji alur survei IKM poktan, moderasi KepBid, & batas 3 beranda
 │   ├── Unit/
 │   │   ├── ExampleTest.php                        # Uji unit dasar
@@ -167,7 +172,8 @@ Mengatur alur permintaan HTTP berdasarkan isolasi wilayah wewenang:
 #### C. Direktori `app/Http/Middleware/`
 Menyediakan lapisan perlindungan gerbang sebelum permintaan masuk ke controller:
 * **`RoleMiddleware.php`**: Memeriksa apakah pengguna yang telah terautentikasi memiliki atribut peran (*role*) yang sesuai dengan rute yang dituju. Mencegah kelompok tani mengakses halaman admin atau kepala bidang, dan sebaliknya.
-* **`SecurityHeadersMiddleware.php`**: Menyisipkan header keamanan standar industri pada setiap respons HTTP, meliputi `X-Frame-Options: SAMEORIGIN` (anti-clickjacking), `X-Content-Type-Options: nosniff` (anti-MIME sniffing), `X-XSS-Protection: 1; mode=block`, `Referrer-Policy`, dan `Permissions-Policy`.
+* **`SecurityHeadersMiddleware.php`**: Menyisipkan header keamanan modern standar OWASP & PCI DSS pada setiap respons HTTP, meliputi `Content-Security-Policy` (CSP), `Strict-Transport-Security` (HSTS), `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `X-Robots-Tag`, penghapusan header usang `X-XSS-Protection` dan `X-Powered-By`, serta kontrol `Cache-Control: no-store` untuk rute privat.
+* **`PreventRequestForgeryMiddleware.php`**: Mengamankan formulir terhadap serangan CSRF menggunakan token terenkripsi pada sesi `HttpOnly` serta menonaktifkan penerbitan cookie `XSRF-TOKEN` non-HttpOnly.
 
 #### D. Direktori `app/Models/`
 Menghubungkan aplikasi dengan tabel basis data melalui Eloquent ORM:

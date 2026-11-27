@@ -10,12 +10,36 @@
   },
   "routes": [
     {
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/fonts/(.*)",
+      "dest": "/public/fonts/$1",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/models/(.*)",
-      "dest": "/public/models/$1"
+      "dest": "/public/models/$1",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=86400"
+      }
     },
     {
       "src": "/images/(.*)",
-      "dest": "/public/images/$1"
+      "dest": "/public/images/$1",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=86400"
+      }
     },
     {
       "src": "/build/(.*)",
@@ -38,6 +62,9 @@
     "APP_ENV": "production",
     "APP_DEBUG": "false",
     "APP_URL": "https://alsintan-delta.vercel.app",
+    "SESSION_SECURE_COOKIE": "true",
+    "SESSION_HTTP_ONLY": "true",
+    "SESSION_SAME_SITE": "lax",
     "APP_CONFIG_CACHE": "/tmp/config.php",
     "APP_EVENTS_CACHE": "/tmp/events.php",
     "APP_PACKAGES_CACHE": "/tmp/packages.php",

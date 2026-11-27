@@ -9,41 +9,17 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : time() }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-subang-emblem.png') }}?v={{ file_exists(public_path('images/logo-subang-emblem.png')) ? filemtime(public_path('images/logo-subang-emblem.png')) : time() }}">
 
-    <!-- Google Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,300..900;1,300..900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <!-- Local Self-Hosted Fonts & Icons -->
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ file_exists(public_path('css/fonts.css')) ? filemtime(public_path('css/fonts.css')) : time() }}">
 
-    <!-- Google 3D Model Viewer Engine -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <!-- Google 3D Model Viewer Engine (v4.4.0 dengan Subresource Integrity SHA-384) -->
+    <script type="module"
+            src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"
+            integrity="sha384-wjsPzEO+lXOf7d9csIDfAQpPt2OKuUU3m0K9qsdKIuzX4N8czSF6hdh23eAbZa3p"
+            crossorigin="anonymous"></script>
 
-    <!-- Tailwind CSS Engine -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "lime-harvest": "#E1F12E",
-                        "lime-harvest-hover": "#CDE01F",
-                        "amber-harvest": "#FFB555",
-                        "celery-cream": "#EDF0C2",
-                        "bone-slate": "#E3E4D6",
-                        "bone-canvas": "#F4F5ED",
-                        "forest-dark": "#14532D",
-                        "forest-deep": "#0F3F22",
-                        "obsidian": "#1C241D",
-                        "muted-green": "#58705C",
-                    },
-                    fontFamily: {
-                        "sans": ["Urbanist", "Plus Jakarta Sans", "system-ui", "sans-serif"],
-                        "urbanist": ["Urbanist", "sans-serif"]
-                    }
-                }
-            }
-        };
-    </script>
+    <!-- Pre-compiled Tailwind CSS Engine (First-Party) -->
+    <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}?v={{ file_exists(public_path('css/tailwind.min.css')) ? filemtime(public_path('css/tailwind.min.css')) : time() }}">
 
     <style>
         .topographic-grid {

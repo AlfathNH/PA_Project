@@ -9,51 +9,16 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : time() }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-subang-emblem.png') }}?v={{ file_exists(public_path('images/logo-subang-emblem.png')) ? filemtime(public_path('images/logo-subang-emblem.png')) : time() }}">
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <!-- Alpine.js (Terbaru v3.17.5 dengan Subresource Integrity SHA-384) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.5/dist/cdn.min.js"
+            integrity="sha384-FYLKjwG3aohNhNZoVG8sY/5ntunm+MqylL90Q+rT3OM7AwV9/BKFjk/RjoIpIgsI"
+            crossorigin="anonymous"></script>
 
-    <!-- Google Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,300..900;1,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <!-- Local Self-Hosted Fonts & Icons -->
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ file_exists(public_path('css/fonts.css')) ? filemtime(public_path('css/fonts.css')) : time() }}">
 
-    <!-- Tailwind CSS Engine -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        // User Reference Palette (media_1793774852232_3ac505b4)
-                        "lime-harvest": "#E1F12E",
-                        "lime-harvest-hover": "#CDE01F",
-                        "amber-harvest": "#FFB555",
-                        "celery-cream": "#EDF0C2",
-                        "bone-slate": "#E3E4D6",
-                        "bone-canvas": "#F4F5ED",
-                        
-                        "sage-bone": "#F1F3EB",
-                        "sage-subtle": "#E6E9DF",
-                        "chartreuse": "#E1F12E",
-                        "chartreuse-hover": "#CDE01F",
-                        "forest-dark": "#14532D",
-                        "forest-deep": "#0F3F22",
-                        "forest-hover": "#166534",
-                        "obsidian": "#1C241D",
-                        "amber-gold": "#FFB555",
-                        "leaf-emerald": "#16A34A"
-                    },
-                    fontFamily: {
-                        "editorial": ["Newsreader", "Georgia", "serif"],
-                        "sans": ["Urbanist", "Plus Jakarta Sans", "system-ui", "sans-serif"],
-                        "urbanist": ["Urbanist", "sans-serif"]
-                    }
-                }
-            }
-        };
-    </script>
+    <!-- Pre-compiled Tailwind CSS Engine (First-Party) -->
+    <link rel="stylesheet" href="{{ asset('css/tailwind.min.css') }}?v={{ file_exists(public_path('css/tailwind.min.css')) ? filemtime(public_path('css/tailwind.min.css')) : time() }}">
 
     <style>
         .material-symbols-outlined {
@@ -388,7 +353,7 @@
 
                         <!-- Kartu Atas: Showcase Foto Petani & Hamparan Sawah (Badge Rapi di Dalam Frame) -->
                         <div class="relative rounded-3xl overflow-hidden border border-forest-dark/20 bg-forest-dark shadow-xl min-h-[320px] sm:min-h-[360px] flex flex-col justify-between p-5 sm:p-6 group">
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCanV_Hq3DCJJg4-gaEEKZjcTzNVixk7v90BM04Bc17glF4ZppaTRnzoZIlWrBnueOnv-Tfj12R1nSqUauRw3TPH06E2MnWcN-XxdoA9nQ37hqfcieJNqeZ-7WIeZZRndmJ4Z-FQQqOVZcsJHJw7ddF4nHDwHDeXZNuwNMzV661oFDFKV-opkpvnl9UHGox_9d0q_PSnWk61bHOXgKYv2fVr3t4ng8EkPZY3RhRWDXkCjNufzdu3yLw4krwIVTHro4YsLwkDS8GaAg"
+                            <img src="{{ asset('images/petani-subang-hero.jpg') }}?v={{ file_exists(public_path('images/petani-subang-hero.jpg')) ? filemtime(public_path('images/petani-subang-hero.jpg')) : time() }}"
                                  alt="Petani Kabupaten Subang"
                                  class="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 brightness-[0.88]">
                             <div class="absolute inset-0 bg-gradient-to-t from-obsidian/95 via-obsidian/45 to-obsidian/20"></div>
@@ -1157,6 +1122,7 @@
                     &copy; 2026 Dinas Pertanian Pemerintah Kabupaten Subang. Seluruh hak cipta dilindungi.
                 </div>
                 <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+                    <a href="{{ route('privacy') }}" class="hover:text-white underline decoration-white/30 transition">Kebijakan Privasi &amp; Cookie</a>
                     <span>Standar Pelayanan Publik</span>
                     <span>Karya Utama Satya Nagara</span>
                 </div>
@@ -1164,6 +1130,50 @@
 
         </div>
     </footer>
+
+    <!-- Banner Pemberitahuan Cookie & Privasi Sesi (Kepatuhan UU PDP & GDPR) -->
+    <div x-data="{
+            accepted: true,
+            init() {
+                try {
+                    this.accepted = localStorage.getItem('spk_cookie_notice_ok') === '1';
+                } catch (e) {
+                    this.accepted = false;
+                }
+            },
+            acceptNotice() {
+                this.accepted = true;
+                try {
+                    localStorage.setItem('spk_cookie_notice_ok', '1');
+                } catch (e) {}
+            }
+         }"
+         x-cloak
+         x-show="!accepted"
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-4"
+         class="fixed bottom-4 left-4 right-4 sm:left-6 sm:right-auto sm:max-w-md z-40 bg-white border border-forest-dark/20 rounded-2xl p-4 shadow-2xl text-obsidian flex flex-col gap-3"
+         role="region"
+         aria-label="Pemberitahuan Cookie dan Privasi">
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-forest-dark text-xl shrink-0 mt-0.5">shield_lock</span>
+            <p class="text-xs leading-relaxed text-obsidian/90">
+                Portal ini hanya menggunakan <strong>cookie sesi fungsional terenkripsi</strong> untuk menjaga keamanan login dan pengiriman formulir. Kami tidak memasang cookie pelacak iklan.
+                <a href="{{ route('privacy') }}" class="font-bold text-forest-dark underline hover:text-forest-deep">Baca Kebijakan Privasi &amp; Cookie</a>.
+            </p>
+        </div>
+        <div class="flex justify-end">
+            <button type="button"
+                    @click="acceptNotice()"
+                    class="px-4 py-2 min-h-[36px] rounded-xl bg-forest-dark hover:bg-forest-hover text-lime-harvest text-xs font-extrabold transition shadow-2xs">
+                Saya Mengerti
+            </button>
+        </div>
+    </div>
 
     @if(app()->environment(['local', 'testing']) || config('app.debug'))
     <!-- Floating Discreet Role Switcher (Development/Demo Only, Touch & Desktop Friendly) -->
