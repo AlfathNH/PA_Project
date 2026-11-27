@@ -89,7 +89,7 @@ class DashboardController extends Controller
         $storedPath = null;
 
         try {
-            DB::transaction(function () use ($user, $request, $nomorPengajuan, $tahun, $eksisting, &$storedPath) {
+            $pengajuan = DB::transaction(function () use ($user, $request, $nomorPengajuan, $tahun, $eksisting, &$storedPath) {
                 $pengajuan = PengajuanBantuan::create([
                     'user_id'                   => $user->id,
                     'jenis_alsintan_id'         => $request->jenis_alsintan_id,
@@ -131,6 +131,8 @@ class DashboardController extends Controller
                         ]);
                     }
                 }
+
+                return $pengajuan;
             });
 
             return redirect()->route('poktan.dashboard', ['tab' => 'status'])

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\JenisAlsintan;
 use App\Models\KelompokTani;
+use App\Models\PengajuanBantuan;
 use App\Models\UlasanLayanan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -124,5 +126,34 @@ class UlasanLayananTest extends TestCase
         $response->assertStatus(200);
         $ulasanLanding = $response->viewData('ulasanLanding');
         $this->assertCount(3, $ulasanLanding);
+    }
+
+    public function test_poktan_dapat_mengajukan_usulan_tanpa_pdf_dan_memicu_popup_ikm(): void
+    {
+        $alsintan = JenisAlsintan::create([
+            'nama_alsintan' => 'Traktor Roda 2',
+            'kode_alsintan' => 'TR2',
+            'satuan'        => 'Unit',
+            'kuota_unit'    => 10,
+            'is_active'     => true,
+        ]);
+
+        $response = $this->actingAs($this->poktanUser)
+            ->post(route('poktan.pengajuan.store'), [
+                'jenis_alsintan_id'         => $alsintan->id,
+                'tahun_pengajuan'           => 2026,
+                'jumlah_diminta'            => 1,
+                'jumlah_alsintan_eksisting' => 0,
+                'alasan_pengajuan'          => 'Membutuhkan traktor untuk percepatan olah tanah musim tanam.',
+            ]);
+
+        $response->assertRedirect(route('poktan.dashboard', ['tab' => 'status']));
+        $response->assertSessionHas('success');
+        $response->assertSessionMissing('error');
+        $response->assertSessionHas('show_rating_popup', true);
+
+        $pengajuan = PengajuanBantuan::first();
+        $this->assertNotNull($pengajuan);
+        $response->assertSessionHas('baru_diajukan_id', $pengajuan->id);
     }
 }

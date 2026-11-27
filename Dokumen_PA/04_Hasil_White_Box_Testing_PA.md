@@ -64,15 +64,16 @@ Ulasan Layanan (Tests\Feature\UlasanLayanan)
  ✔ Kepala bidang dapat mengkurasi dan menyetujui ulasan ke beranda
  ✔ Non kepala bidang ditolak saat mencoba moderasi ulasan
  ✔ Landing page maksimal menampilkan tiga ulasan terkurasi
+ ✔ Poktan dapat mengajukan usulan tanpa pdf dan memicu popup ikm
 
-OK (29 tests, 307 assertions)
-Time: 00:03.470, Memory: 60.00 MB
+OK (30 tests, 314 assertions)
+Time: 00:01.860, Memory: 60.00 MB
 ```
 
-* **Total Skenario Pengujian Unit & Fitur:** 29 Uji Kasus
-* **Total Pernyataan Verifikasi (*Assertions*):** 307 Assertions
+* **Total Skenario Pengujian Unit & Fitur:** 30 Uji Kasus
+* **Total Pernyataan Verifikasi (*Assertions*):** 314 Assertions
 * **Tingkat Keberhasilan:** 100% Lulus (*Zero Failure, Zero Error*)
-* **Waktu Eksekusi Komputasi:** 3,470 Detik
+* **Waktu Eksekusi Komputasi:** 1,860 Detik
 
 ---
 
